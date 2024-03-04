@@ -1,0 +1,58 @@
+##GRAMMAR PSEUDO Defintions
+##NOT JavaCC compatable!
+
+TODO:
+- getitem #done
+- parens #done
+- all operators #done
+- dot #done
+- function call #done
+- increment/decrement #done
+- new object assignment with types #done NOTE: cannot support generic types just yet
+- inline conditionals #done
+- statement blocks #done
+- classes #done
+- methods #done
+- while loop #done
+- do while
+- for loop #done
+- foreach loop #done
+- if-else if -else #done
+- switch case
+
+ExprBase -> <STRING> 
+        | <INTEGER> 
+        | <IDENTIFIER> 
+        | <CHARACTER> 
+        | <IDENTIFIER>
+        | <NULL>
+        | <TRUE>
+        | <FALSE>
+
+ExprVal3 -> (ExprVal4() <OR> ExprVal4()
+            | ExprVal4() 
+            | ExprBase()) ((<LBRACKET> ExprVal3() <RBRACKET>) 
+                            | <DOT> <IDENTIFIER>)?
+ExprVal4 -> ExprVal8() <AND> ExprVal8()
+            | ExprVal8() 
+            | ExprBase()
+ExprVal8 -> ExprVal9() (<EQUALS> | <NOT_EQUALS>) ExprVal9()
+            | ExprVal9() 
+            | ExprBase()
+ExprVal9 -> ExprVal11() (<LT> | <LE> | <GT> | <GE> | <INSTANCEOF>) ExprVal11()
+            | ExprVal11() 
+            | ExprBase()
+ExprVal11 -> ExprVal12() (<PLUS> | <MINUS>) ExprVal12()
+            | ExprVal12() 
+            | ExprBase()
+ExprVal12 -> ExprVal13() (<STAR> | <FORWARD_SLASH> | <PERCENT>) ExprVal13()
+            | ExprVal13() 
+            | ExprBase()
+ExprVal13 -> <NEW> ExprVal14()
+            | ExprVal14() 
+            | ExprBase()
+
+ExprVal14 -> <BOOL_NEG> ExprVal16() | ExprVal16()
+ExprVal16 -> <LPAREN> ExprVal3() <RPAREN>
+
+

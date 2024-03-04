@@ -1,0 +1,360 @@
+/*
+ *  %java -classpath javacc.jar javacc gavel_pretty_print.jj
+ *  %javac gavel_pretty_print.java
+ *  %java gavel_pretty_print
+ */
+
+options {
+  IGNORE_CASE = false;
+}
+
+PARSER_BEGIN(gavel_pretty_print)
+
+import java.io.*;
+
+class gavel_pretty_print {
+    /** Main entry point. */
+    /** Test */
+    public static void main(String args[]) throws ParseException, FileNotFoundException {
+        // Redirect output to a file
+        PrintStream fileOut = new PrintStream("./output.txt");
+        System.setOut(fileOut);
+
+        FileReader fileReader = new FileReader("testing_parsing.txt");
+        gavel_pretty_print parser = new gavel_pretty_print(fileReader);
+        parser.Program(0);
+
+        fileOut.close(); // Don't forget to close the file stream
+    }
+PARSER_END(gavel_pretty_print)
+
+SKIP: /* Whitespace */
+{
+  "\t"
+| "\n"
+| "\r"
+| " "
+}
+
+TOKEN:
+{
+  <CLASS: "class">
+  |<EXTENDS: "extends">
+  |<PUBLIC: "public">
+  |<RETURN: "return">
+  |<VOID: "void">
+  |<IF: "if">
+  |<ELSEIF: "else if">
+  |<ELSE: "else">
+  |<WHILE: "while">
+  |<BREAK: "break">
+  |<LABELED: "labeled">
+  |<FOREACH: "foreach">
+  |<FOR: "for">
+  |<SWITCH: "switch">
+  |<CASE: "case">
+  |<DEFAULT_: "default">
+  |<NEW: "new">
+  |<NULL: "null">
+  |<TRUE: "true">
+  |<FALSE: "false">
+  |<SUPER: "super">
+  |<INSTANCEOF: "instanceof">
+  |<ABSTRACT: "abstract">
+  |<ASSERT: "assert">
+  |<BYTE: "byte">
+  |<CATCH: "catch">
+  |<CHAR: "char">
+  |<CONST: "const">
+  |<CONTINUE: "continue">
+  |<DOUBLE: "double">
+  |<DO: "do">
+  |<ENUM: "enum">
+  |<FINAL: "final">
+  |<FINALLY: "finally">
+  |<FLOAT: "float">
+  |<GOTO: "goto">
+  |<IMPLEMENTS: "implements">
+  |<IMPORT: "import">
+  |<INTERFACE: "interface">
+  |<LONG: "long">
+  |<NATIVE: "native">
+  |<PACKAGE: "package">
+  |<PRIVATE: "private">
+  |<PROTECTED: "protected">
+  |<SHORT: "short">
+  |<STATIC: "static">
+  |<STRICTFP: "strictfp">
+  |<SYNCHRONIZED: "synchronized">
+  |<THROW: "throw">
+  |<THROWS: "throws">
+  |<TRANSIENT: "transient">
+  |<TRY: "try">
+  |<VOLATILE: "volatile">
+  |<COMMENT: "/*" (~[])* "*/" >
+  |<IDENTIFIER: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","_","0"-"9"])* >
+  |<INTEGER: ["1"-"9"](["0"-"9"])* | ["0"] >
+  |<CHARACTER: "'"~["'"] "'" >
+  |<STRING: "\"" (~["\""])* "\"">
+  |<COMMA: ",">
+  |<LPAREN: "(">
+  |<RPAREN: ")">
+  |<LBRACKET: "[">
+  |<RBRACKET: "]">
+  |<LBRACE: "{">
+  |<RBRACE: "}">
+  |<COLON: ":">
+  |<PLUS_EQUALS: "+=">
+  |<MINUS_EQUALS: "-=">
+  |<STAR_EQUALS: "*=">
+  |<FORWARD_SLASH_EQUALS: "/=">
+  |<PERCENT_EQUALS: "%=">
+  |<ASSIGNMENT: "=">
+  |<INCREMENT: "++">
+  |<DECREMENT: "--">
+  |<OR: "||">
+  |<AND: "&&">
+  |<NOT_EQUALS: "!=">
+  |<EQUALS: "==">
+  |<LE: "<=">
+  |<GE: ">=">
+  |<LT: "<">
+  |<GT: ">">
+  |<PLUS: "+">
+  |<MINUS: "-">
+  |<EXPONENT: "**">
+  |<STAR: "*">
+  |<FORWARD_SLASH: "/">
+  |<PERCENT: "%">
+  |<BOOL_NEG: "!">
+  |<DOT: ".">
+  |<QUESTIONMARK: "?">
+  |<SEMICOLON: ";">
+}
+
+/* Program Syntax */
+
+void Program(int indent):
+{}
+{
+  StatementBlock(indent)
+  <EOF>
+}
+void StatementBlock(int indent):
+{}
+{
+    {System.out.print("\n");}
+    ({System.out.print(("   ").repeat(indent));} ExprVal1(indent) <SEMICOLON> {System.out.print(";\n");}
+    |ReturnStatement(indent)
+    |ClassDeclaration(indent)
+    |MethodDeclaration(indent)
+    |WhileLoop(indent)
+    |ForLoop(indent)
+    |ForEachLoop(indent)
+    |BreakStatement(indent)
+    |ContinueStatement(indent)
+    |ThrowStatement(indent)
+    |IfBlock(indent))*
+    {System.out.print("\n");}
+}
+void ReturnStatement(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));} <RETURN> {System.out.print("return ");} (ExprVal1(indent))? <SEMICOLON> {System.out.print(";\n");}
+}
+void BreakStatement(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));}<BREAK>{System.out.print("break");} <SEMICOLON> {System.out.print(";\n");}
+}
+void ContinueStatement(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));}<CONTINUE>{System.out.print("continue ");} <SEMICOLON> {System.out.print(";\n");}
+}
+void ThrowStatement(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));} <THROW>{System.out.print("throw ");} ExprVal2(indent) <SEMICOLON> {System.out.print(";\n");}
+}
+void IfBlock(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));}<IF> {System.out.print("if ");} <LPAREN> {System.out.print("(");} ExprVal2(indent) <RPAREN> {System.out.print(")");}
+     <LBRACE> {System.out.print("{");} StatementBlock(indent+1) <RBRACE>{System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");}
+    ({System.out.print(("   ").repeat(indent));}<ELSEIF> {System.out.print("else if ");} <LPAREN> {System.out.print("(");} ExprVal2(indent) <RPAREN> {System.out.print(")");}
+    <LBRACE> {System.out.print("{");} StatementBlock(indent+1) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");})*
+    ({System.out.print(("   ").repeat(indent));} <ELSE> {System.out.print("else");}
+    <LBRACE> {System.out.print("{");} StatementBlock(indent+1) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");})?
+
+
+}
+
+void MethodDeclaration(int indent):
+{Token t;}
+{
+    {System.out.print(("   ").repeat(indent));}
+    (<PUBLIC> {System.out.print("public ");} 
+    | <PRIVATE> {System.out.print("private ");}
+    | <PROTECTED> {System.out.print("protected ");}) 
+    (<STATIC> {System.out.print("static ");})? 
+    (<VOID> {System.out.print("void ");} | t=<IDENTIFIER> {System.out.print(t.image);} ) 
+    t=<IDENTIFIER> {System.out.print(" "+t.image);} <LPAREN> {System.out.print("(");} (CommaSeparatedExprList(indent))? <RPAREN> {System.out.print(")");}
+    <LBRACE> {System.out.print("{");} StatementBlock(indent+1) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");}
+}
+
+void WhileLoop(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));} <WHILE> {System.out.print("while");} <LPAREN> {System.out.print("(");} ExprVal2(indent) <RPAREN> {System.out.print(")");}
+    <LBRACE> {System.out.print("{");} StatementBlock(indent+1) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");}
+}
+void ForLoop(int indent):
+{}
+{
+    {System.out.print(("   ").repeat(indent));} <FOR> {System.out.print("for");} <LPAREN> {System.out.print("(");} ExprVal1(indent) <SEMICOLON> {System.out.print("; ");} ExprVal1(indent) <SEMICOLON> {System.out.print("; ");} ExprVal1(indent) <RPAREN> {System.out.print(")");} <LBRACE> {System.out.print("{");} StatementBlock(indent) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");}
+}
+void ForEachLoop(int indent):
+{Token t;}
+{
+
+    {System.out.print(("   ").repeat(indent));} <FOREACH> {System.out.print("for ");} <LPAREN> {System.out.print("(");} t=<IDENTIFIER> {System.out.print(t.image+" ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} <COLON> {System.out.print(": ");} ExprVal1(indent) <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock(indent) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");}
+}
+
+void ClassDeclaration(int indent):
+{Token t;}
+{
+
+    {System.out.print(("   ").repeat(indent));}  <CLASS> {System.out.print("class ");} t=<IDENTIFIER> {System.out.print(t.image);} (<EXTENDS> {System.out.print(" extends ");} ClassExtendsList(indent))?
+    <LBRACE> {System.out.print("{");} StatementBlock(indent+1) <RBRACE> {System.out.print("\n"+("   ").repeat(indent)+"}"+"\n");}
+}
+void ClassExtendsList(int indent):
+{Token t;}
+{
+    t=<IDENTIFIER>{System.out.print(t.image);} ClassExtendsListP(indent)
+}
+void ClassExtendsListP(int indent):
+{Token t;}
+{
+    <COMMA> {System.out.print(" , ");} t=<IDENTIFIER>{System.out.print(t.image+"");} ClassExtendsListP(indent)
+    |{}
+}
+
+void ExprVal1(int indent):
+{}
+{
+    ExprVal2(indent) ((<ASSIGNMENT> {System.out.print(" = ");}
+        | <PLUS_EQUALS> {System.out.print(" += ");}
+        | <MINUS_EQUALS> {System.out.print(" -= ");}
+        | <FORWARD_SLASH_EQUALS> {System.out.print(" /= ");}
+        | <PERCENT_EQUALS> {System.out.print(" %= ");}
+        ) ExprVal1(indent))?
+}
+void ExprVal2(int indent):
+{}
+{
+    ExprVal3(indent) (<QUESTIONMARK> {System.out.print("?");} ExprVal3(indent) <COLON> {System.out.print(":");} ExprVal2(indent))?
+}
+void ExprVal3(int indent):
+{}
+{
+
+    ExprVal4(indent) (<OR> {System.out.print(" || ");} ExprVal3(indent))?
+}
+void ExprVal4(int indent):
+{}
+{
+
+    ExprVal8(indent) (<AND> {System.out.print(" && ");} ExprVal4(indent))?
+}
+void ExprVal8(int indent):
+{}
+{
+
+    ExprVal9(indent) ((<EQUALS> {System.out.print(" == ");} | <NOT_EQUALS> {System.out.print(" != ");}) ExprVal8(indent))?
+}
+void ExprVal9(int indent):
+{}
+{
+
+    ExprVal11(indent) ((<LT> {System.out.print(" < ");}  | <LE> {System.out.print(" <= ");}| <GT> {System.out.print(" > ");}| <GE> {System.out.print(" >= ");}| <INSTANCEOF> {System.out.print("instanceof ");}) ExprVal9(indent))?
+
+}
+void ExprVal11(int indent):
+{}
+{
+    ExprVal12(indent) ((<PLUS> {System.out.print("+");}  | <MINUS> {System.out.print("-");} ) ExprVal11(indent))?
+
+}
+void ExprVal12(int indent):
+{}
+{
+
+    ExprVal13__(indent) ((<STAR> {System.out.print("*");} | <FORWARD_SLASH> {System.out.print("/");} | <PERCENT> {System.out.print("%");} ) ExprVal12(indent))?
+}
+void ExprVal13__(int indent):
+{}
+{
+    ExprVal13(indent) (<EXPONENT> ExprVal13__(indent))?
+}
+void ExprVal13(int indent):
+{}
+{
+    <NEW> {System.out.print("new ");} ExprVal14(indent)
+    | ExprVal14(indent)
+}
+void ExprVal14(int indent):
+{}
+{
+    <BOOL_NEG> {System.out.print("!");} ExprVal16(indent)
+    | ExprVal15(indent)
+}
+void ExprVal15(int indent):
+{}
+{
+    ExprVal16(indent) (<INCREMENT> {System.out.print("++");}  | <DECREMENT> {System.out.print("--");} )?
+}
+void ExprVal16(int indent):
+{Token t;}
+{
+    <LPAREN> {System.out.print("(");} (ExprVal2(indent))? <RPAREN> {System.out.print(")");} ExprVal16P(indent)
+    | t=<IDENTIFIER> {System.out.print(t.image);} ExprVal16P(indent)
+    | ExprBase(indent) 
+}
+void ExprVal16P(int indent):
+{Token t;}
+{
+    
+    t=<IDENTIFIER> {System.out.print(" "+t.image);}
+    |
+    <LBRACKET> {System.out.print("[");} (ExprVal2(indent))? <RBRACKET> {System.out.print("]");} ExprVal16P(indent)
+    |
+    <DOT> {System.out.print(".");} t=<IDENTIFIER> {System.out.print(t.image+"");} ExprVal16P(indent)
+    |
+    <LPAREN> {System.out.print("(");} (CommaSeparatedExprList(indent))* <RPAREN> {System.out.print(")");} ExprVal16P(indent)
+    |
+    {}
+}
+void CommaSeparatedExprList(int indent):
+{}
+{
+    ExprVal2(indent) CommaSeparatedExprListP(indent)
+}
+void CommaSeparatedExprListP(int indent):
+{}
+{
+    <COMMA> {System.out.print(", ");} ExprVal2(indent) CommaSeparatedExprListP(indent)
+    |
+    {}
+}
+
+void ExprBase(int indent):
+{Token t;}
+{
+    t=<STRING> {System.out.print(t.image+"");}
+    | t=<INTEGER> {System.out.print(t.image+"");}
+    | t=<CHARACTER> {System.out.print(t.image+"");}
+    | t=<NULL>{System.out.print(t.image+"");}
+    | t=<TRUE>{System.out.print(t.image+"");}
+    | t=<FALSE>{System.out.print(t.image+"");}
+}

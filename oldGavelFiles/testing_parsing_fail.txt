@@ -1,0 +1,41 @@
+int m = (james[joe][lilly + 1]**2) + 1 + james(joe+1, lilly) || !true  + (a + b)*(j + K.james[joe](a ? b : false, k));
+int[] arr;
+arr = Array.myArr("James", "Joe", "Lilly");
+v();
+
+class James extends Joe{
+    int x;
+    public static void main(String[] args) {
+        int x = x;
+    }
+    public int test_this(int v){
+        return v + this.x *;
+    }
+    public void test_while(int c){
+        while (c > 0){
+            System.out.println(c);
+            c--;
+        }
+    }
+    public void test_for(int c){
+        for (int i = 0; i < c; i++){
+            continue;
+            return 1;
+        }
+        foreach (James joe : James.arrJoe(c)){
+            if (a < b || a + 1 instanceof Array){
+                return 1;
+            }
+            else if (true || false){
+                return;
+            }
+            else if (new Test().val){
+                
+            }
+            else{
+                throw new Exception("I do not know what this will be exactly");
+            }
+            break;
+        }
+    }
+}

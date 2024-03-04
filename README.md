@@ -8,15 +8,15 @@
 
 | Task                                        | Status | Person |
 | ------------------------------------------- | ------ | ------ |
-| Part 1 ASTG                                 | N/A    | N/A    |
-| Add MiniC to project                        | ✅     |        |
+| Part 1 ASTG                                 | N/A    | James  |
+| Add MiniC to project                        | ✅     | Aby    |
 | Make MiniC Run                              | ❌     |        |
 | Integrate MiniC with Gavel                  | ❌     |        |
 | Rename the MiniC to MiniJava.jj + AST rules | ❌     |        |
-| Part 2 Pretty Print                         | N/A    | N/A    |
-| Part 3 Symbol Table                         | N/A    | N/A    |
-| Part 4 Type Checking                        | N/A    | N/A    |
-| Part 0 MGMT and Making our lives easier     | N/A    | N/A    |
+| Part 2 Pretty Print                         | N/A    | Aby    |
+| Part 3 Symbol Table                         | N/A    | James  |
+| Part 4 Type Checking                        | N/A    | Aby    |
+| Part 0 MGMT and Making our lives easier     | N/A    | Aby    |
 | JUnit Test for Inidivudal Showcasing Demos  | ❌     |        |
 | Clean up project                            | ❌     |        |
 | New github Repo                             | ❌     |        |
