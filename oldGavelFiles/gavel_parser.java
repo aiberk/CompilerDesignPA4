@@ -5,7 +5,8 @@ class gavel_parser implements gavel_parserConstants {
     /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
 
-    FileReader fileReader = new FileReader("testing_parsing.txt");
+    //FileReader fileReader = new FileReader("testing_parsing.txt");
+    FileReader fileReader = new FileReader("PA03demo.java");
 
 
     gavel_parser parser = new gavel_parser(fileReader);
@@ -38,6 +39,7 @@ class gavel_parser implements gavel_parserConstants {
       case PRIVATE:
       case PROTECTED:
       case THROW:
+      case COMMENT:
       case IDENTIFIER:
       case INTEGER:
       case CHARACTER:
@@ -82,6 +84,9 @@ class gavel_parser implements gavel_parserConstants {
       case FOR:
         ForLoop();
         break;
+      case COMMENT:
+        CommentIgnore();
+        break;
       case FOREACH:
         ForEachLoop();
         break;
@@ -103,6 +108,10 @@ class gavel_parser implements gavel_parserConstants {
         throw new ParseException();
       }
     }
+  }
+
+  static final public void CommentIgnore() throws ParseException {
+    jj_consume_token(COMMENT);
   }
 
   static final public void ReturnStatement() throws ParseException {
@@ -251,29 +260,57 @@ class gavel_parser implements gavel_parserConstants {
     jj_consume_token(LPAREN);
                                                               System.out.print("(");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NEW:
-    case NULL:
-    case TRUE:
-    case FALSE:
     case IDENTIFIER:
-    case INTEGER:
-    case CHARACTER:
-    case STRING:
-    case LPAREN:
-    case BOOL_NEG:
-      CommaSeparatedExprList();
+      CommaSeparatedSignatureList();
       break;
     default:
       jj_la1[8] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
-                                                                                                                            System.out.print(")");
+                                                                                                                                 System.out.print(")");
     jj_consume_token(LBRACE);
               System.out.print("{");
     StatementBlock();
     jj_consume_token(RBRACE);
                                                                  System.out.print("}");
+  }
+
+  static final public void CommaSeparatedSignatureList() throws ParseException {
+    DeclarationIdentifiers();
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case COMMA:
+        ;
+        break;
+      default:
+        jj_la1[9] = jj_gen;
+        break label_3;
+      }
+      jj_consume_token(COMMA);
+                                      System.out.print(",");
+      DeclarationIdentifiers();
+    }
+  }
+
+  static final public void DeclarationIdentifiers() throws ParseException {
+ Token t;
+    t = jj_consume_token(IDENTIFIER);
+                    System.out.print(t.image+" ");
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LBRACKET:
+      jj_consume_token(LBRACKET);
+                                                                System.out.print("[");
+      jj_consume_token(RBRACKET);
+                                                                                                  System.out.print("]");
+      break;
+    default:
+      jj_la1[10] = jj_gen;
+      ;
+    }
+    t = jj_consume_token(IDENTIFIER);
+                                                                                                                                           System.out.print(t.image+" ");
   }
 
   static final public void WhileLoop() throws ParseException {
@@ -347,7 +384,7 @@ class gavel_parser implements gavel_parserConstants {
       ClassExtendsList();
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -375,7 +412,7 @@ class gavel_parser implements gavel_parserConstants {
       ClassExtendsListP();
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[12] = jj_gen;
 
     }
   }
@@ -410,14 +447,14 @@ class gavel_parser implements gavel_parserConstants {
                             System.out.print("%=");
         break;
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       ExprVal1();
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
   }
@@ -434,7 +471,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal2();
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
   }
@@ -448,7 +485,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal3();
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
   }
@@ -462,7 +499,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal4();
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[17] = jj_gen;
       ;
     }
   }
@@ -482,14 +519,14 @@ class gavel_parser implements gavel_parserConstants {
                                                                     System.out.print("!=");
         break;
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[18] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       ExprVal8();
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[19] = jj_gen;
       ;
     }
   }
@@ -524,14 +561,14 @@ class gavel_parser implements gavel_parserConstants {
                                                                                                                                                                 System.out.print("instanceof");
         break;
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[20] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       ExprVal9();
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
   }
@@ -551,14 +588,14 @@ class gavel_parser implements gavel_parserConstants {
                                                               System.out.print("-");
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[22] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       ExprVal11();
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[23] = jj_gen;
       ;
     }
   }
@@ -583,14 +620,14 @@ class gavel_parser implements gavel_parserConstants {
                                                                                                             System.out.print("%");
         break;
       default:
-        jj_la1[22] = jj_gen;
+        jj_la1[24] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       ExprVal12();
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[25] = jj_gen;
       ;
     }
   }
@@ -603,7 +640,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal13__();
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[26] = jj_gen;
       ;
     }
   }
@@ -627,7 +664,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal14();
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[27] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -651,7 +688,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal15();
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[28] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -672,74 +709,23 @@ class gavel_parser implements gavel_parserConstants {
                                                                        System.out.print("--");
         break;
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[29] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[30] = jj_gen;
       ;
     }
   }
 
   static final public void ExprVal16() throws ParseException {
- Token t;
+ Token t, t1;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LPAREN:
       jj_consume_token(LPAREN);
               System.out.print("(");
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case NEW:
-      case NULL:
-      case TRUE:
-      case FALSE:
-      case IDENTIFIER:
-      case INTEGER:
-      case CHARACTER:
-      case STRING:
-      case LPAREN:
-      case BOOL_NEG:
-        ExprVal2();
-        break;
-      default:
-        jj_la1[29] = jj_gen;
-        ;
-      }
-      jj_consume_token(RPAREN);
-                                                              System.out.print(")");
-      ExprVal16P();
-      break;
-    case IDENTIFIER:
-      t = jj_consume_token(IDENTIFIER);
-                      System.out.print(t.image+" ");
-      ExprVal16P();
-      break;
-    case NULL:
-    case TRUE:
-    case FALSE:
-    case INTEGER:
-    case CHARACTER:
-    case STRING:
-      ExprBase();
-      break;
-    default:
-      jj_la1[30] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-  }
-
-  static final public void ExprVal16P() throws ParseException {
- Token t;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case IDENTIFIER:
-      t = jj_consume_token(IDENTIFIER);
-                    System.out.print(t.image+" ");
-      break;
-    case LBRACKET:
-      jj_consume_token(LBRACKET);
-                System.out.print("[");
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case NEW:
       case NULL:
@@ -757,8 +743,55 @@ class gavel_parser implements gavel_parserConstants {
         jj_la1[31] = jj_gen;
         ;
       }
+      jj_consume_token(RPAREN);
+                                                              System.out.print(")");
+      ExprVal16P();
+      break;
+    case IDENTIFIER:
+      t = jj_consume_token(IDENTIFIER);
+                      System.out.print(t.image+" ");
+      if (jj_2_1(2)) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case LBRACKET:
+          jj_consume_token(LBRACKET);
+                     System.out.print("[");
+          jj_consume_token(RBRACKET);
+                                                        System.out.print("]");
+          break;
+        default:
+          jj_la1[32] = jj_gen;
+          ;
+        }
+        t1 = jj_consume_token(IDENTIFIER);
+                                                                                                   System.out.print(t1.image+" ");
+      } else {
+        ExprVal16P();
+      }
+      break;
+    case NULL:
+    case TRUE:
+    case FALSE:
+    case INTEGER:
+    case CHARACTER:
+    case STRING:
+      ExprBase();
+      break;
+    default:
+      jj_la1[33] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+  }
+
+  static final public void ExprVal16P() throws ParseException {
+ Token t;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case LBRACKET:
+      jj_consume_token(LBRACKET);
+                System.out.print("[");
+      ExprVal2();
       jj_consume_token(RBRACKET);
-                                                                  System.out.print("]");
+                                                               System.out.print("]");
       ExprVal16P();
       break;
     case DOT:
@@ -771,7 +804,7 @@ class gavel_parser implements gavel_parserConstants {
     case LPAREN:
       jj_consume_token(LPAREN);
               System.out.print("(");
-      label_3:
+      label_4:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case NEW:
@@ -787,8 +820,8 @@ class gavel_parser implements gavel_parserConstants {
           ;
           break;
         default:
-          jj_la1[32] = jj_gen;
-          break label_3;
+          jj_la1[34] = jj_gen;
+          break label_4;
         }
         CommaSeparatedExprList();
       }
@@ -797,7 +830,7 @@ class gavel_parser implements gavel_parserConstants {
       ExprVal16P();
       break;
     default:
-      jj_la1[33] = jj_gen;
+      jj_la1[35] = jj_gen;
 
     }
   }
@@ -816,7 +849,7 @@ class gavel_parser implements gavel_parserConstants {
       CommaSeparatedExprListP();
       break;
     default:
-      jj_la1[34] = jj_gen;
+      jj_la1[36] = jj_gen;
 
     }
   }
@@ -849,10 +882,31 @@ class gavel_parser implements gavel_parserConstants {
                 System.out.print(t.image+" ");
       break;
     default:
-      jj_la1[35] = jj_gen;
+      jj_la1[37] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
+  }
+
+  static private boolean jj_2_1(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_1(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(0, xla); }
+  }
+
+  static private boolean jj_3R_5() {
+    if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_5()) jj_scanpos = xsp;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
   }
 
   static private boolean jj_initialized_once = false;
@@ -864,8 +918,13 @@ class gavel_parser implements gavel_parserConstants {
   /** Next token. */
   static public Token jj_nt;
   static private int jj_ntk;
+  static private Token jj_scanpos, jj_lastpos;
+  static private int jj_la;
+  /** Whether we are looking ahead. */
+  static private boolean jj_lookingAhead = false;
+  static private boolean jj_semLA;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[36];
+  static final private int[] jj_la1 = new int[38];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -877,17 +936,20 @@ class gavel_parser implements gavel_parserConstants {
       jj_la1_init_3();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1e365a0,0x1e365a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x1e00000,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x0,0x0,0x1e00000,0x1c00000,0x1e00000,0x1e00000,0x0,0x0,0x1c00000,};
+      jj_la1_0 = new int[] {0x1e365a0,0x1e365a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x0,0x0,0x1e00000,0x0,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x78218002,0x78218002,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x78000000,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x8000000,0x80000000,0x70000000,};
+      jj_la1_1 = new int[] {0x7c218002,0x7c218002,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x8000000,0x80000000,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x0,0x0,0x78000000,0x0,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x20000001,0x20000001,0x20000001,0x0,0x0,0x0,0x0,0x0,0x20000001,0x0,0x0,0x1d80,0x1d80,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x6000,0x6000,0x20000001,0x1,0x20000001,0x20000001,0x40000005,0x0,0x0,};
+      jj_la1_2 = new int[] {0x20000001,0x20000001,0x20000001,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x1d80,0x1d80,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x6000,0x6000,0x20000001,0x4,0x1,0x20000001,0x40000005,0x0,0x0,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
+  static final private JJCalls[] jj_2_rtns = new JJCalls[1];
+  static private boolean jj_rescan = false;
+  static private int jj_gc = 0;
 
   /** Constructor with InputStream. */
   public gavel_parser(java.io.InputStream stream) {
@@ -907,7 +969,8 @@ class gavel_parser implements gavel_parserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -921,7 +984,8 @@ class gavel_parser implements gavel_parserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor. */
@@ -938,7 +1002,8 @@ class gavel_parser implements gavel_parserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -948,7 +1013,8 @@ class gavel_parser implements gavel_parserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Constructor with generated Token Manager. */
@@ -964,7 +1030,8 @@ class gavel_parser implements gavel_parserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   /** Reinitialise. */
@@ -973,7 +1040,8 @@ class gavel_parser implements gavel_parserConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 38; i++) jj_la1[i] = -1;
+    for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -983,11 +1051,44 @@ class gavel_parser implements gavel_parserConstants {
     jj_ntk = -1;
     if (token.kind == kind) {
       jj_gen++;
+      if (++jj_gc > 100) {
+        jj_gc = 0;
+        for (int i = 0; i < jj_2_rtns.length; i++) {
+          JJCalls c = jj_2_rtns[i];
+          while (c != null) {
+            if (c.gen < jj_gen) c.first = null;
+            c = c.next;
+          }
+        }
+      }
       return token;
     }
     token = oldToken;
     jj_kind = kind;
     throw generateParseException();
+  }
+
+  static private final class LookaheadSuccess extends java.lang.Error { }
+  static final private LookaheadSuccess jj_ls = new LookaheadSuccess();
+  static private boolean jj_scan_token(int kind) {
+    if (jj_scanpos == jj_lastpos) {
+      jj_la--;
+      if (jj_scanpos.next == null) {
+        jj_lastpos = jj_scanpos = jj_scanpos.next = token_source.getNextToken();
+      } else {
+        jj_lastpos = jj_scanpos = jj_scanpos.next;
+      }
+    } else {
+      jj_scanpos = jj_scanpos.next;
+    }
+    if (jj_rescan) {
+      int i = 0; Token tok = token;
+      while (tok != null && tok != jj_scanpos) { i++; tok = tok.next; }
+      if (tok != null) jj_add_error_token(kind, i);
+    }
+    if (jj_scanpos.kind != kind) return true;
+    if (jj_la == 0 && jj_scanpos == jj_lastpos) throw jj_ls;
+    return false;
   }
 
 
@@ -1002,7 +1103,7 @@ class gavel_parser implements gavel_parserConstants {
 
 /** Get the specific Token. */
   static final public Token getToken(int index) {
-    Token t = token;
+    Token t = jj_lookingAhead ? jj_scanpos : token;
     for (int i = 0; i < index; i++) {
       if (t.next != null) t = t.next;
       else t = t.next = token_source.getNextToken();
@@ -1020,6 +1121,36 @@ class gavel_parser implements gavel_parserConstants {
   static private java.util.List jj_expentries = new java.util.ArrayList();
   static private int[] jj_expentry;
   static private int jj_kind = -1;
+  static private int[] jj_lasttokens = new int[100];
+  static private int jj_endpos;
+
+  static private void jj_add_error_token(int kind, int pos) {
+    if (pos >= 100) return;
+    if (pos == jj_endpos + 1) {
+      jj_lasttokens[jj_endpos++] = kind;
+    } else if (jj_endpos != 0) {
+      jj_expentry = new int[jj_endpos];
+      for (int i = 0; i < jj_endpos; i++) {
+        jj_expentry[i] = jj_lasttokens[i];
+      }
+      boolean exists = false;
+      for (java.util.Iterator it = jj_expentries.iterator(); it.hasNext();) {
+        int[] oldentry = (int[])(it.next());
+        if (oldentry.length == jj_expentry.length) {
+          exists = true;
+          for (int i = 0; i < jj_expentry.length; i++) {
+            if (oldentry[i] != jj_expentry[i]) {
+              exists = false;
+              break;
+            }
+          }
+          if (exists) break;
+        }
+      }
+      if (!exists) jj_expentries.add(jj_expentry);
+      if (pos != 0) jj_lasttokens[(jj_endpos = pos) - 1] = kind;
+    }
+  }
 
   /** Generate ParseException. */
   static public ParseException generateParseException() {
@@ -1029,7 +1160,7 @@ class gavel_parser implements gavel_parserConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 36; i++) {
+    for (int i = 0; i < 38; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1054,6 +1185,9 @@ class gavel_parser implements gavel_parserConstants {
         jj_expentries.add(jj_expentry);
       }
     }
+    jj_endpos = 0;
+    jj_rescan_token();
+    jj_add_error_token(0, 0);
     int[][] exptokseq = new int[jj_expentries.size()][];
     for (int i = 0; i < jj_expentries.size(); i++) {
       exptokseq[i] = (int[])jj_expentries.get(i);
@@ -1067,6 +1201,41 @@ class gavel_parser implements gavel_parserConstants {
 
   /** Disable tracing. */
   static final public void disable_tracing() {
+  }
+
+  static private void jj_rescan_token() {
+    jj_rescan = true;
+    for (int i = 0; i < 1; i++) {
+    try {
+      JJCalls p = jj_2_rtns[i];
+      do {
+        if (p.gen > jj_gen) {
+          jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
+          switch (i) {
+            case 0: jj_3_1(); break;
+          }
+        }
+        p = p.next;
+      } while (p != null);
+      } catch(LookaheadSuccess ls) { }
+    }
+    jj_rescan = false;
+  }
+
+  static private void jj_save(int index, int xla) {
+    JJCalls p = jj_2_rtns[index];
+    while (p.gen > jj_gen) {
+      if (p.next == null) { p = p.next = new JJCalls(); break; }
+      p = p.next;
+    }
+    p.gen = jj_gen + xla - jj_la; p.first = token; p.arg = xla;
+  }
+
+  static final class JJCalls {
+    int gen;
+    Token first;
+    int arg;
+    JJCalls next;
   }
 
 }

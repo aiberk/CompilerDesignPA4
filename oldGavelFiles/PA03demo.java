@@ -1,8 +1,8 @@
 
 class PA03demo{
    public static void  main(String[] args){
-      System.out.println((new Demo()).go(10, 3));
-
+      System.out.println((new Demo()).go(10, 3)); /*comment*/
+      /*comment*/
 
    }
 

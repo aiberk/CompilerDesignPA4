@@ -16,8 +16,7 @@ class gavel_parser {
     /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
 
-    //FileReader fileReader = new FileReader("testing_parsing.txt");
-    FileReader fileReader = new FileReader("PA03demo.java");
+    FileReader fileReader = new FileReader("testing_parsing.txt");
  
 
     gavel_parser parser = new gavel_parser(fileReader);
@@ -148,17 +147,11 @@ void StatementBlock():
     |MethodDeclaration()
     |WhileLoop()
     |ForLoop()
-    |CommentIgnore()
     |ForEachLoop()
     |BreakStatement()
     |ContinueStatement()
     |ThrowStatement()
     |IfBlock())*
-}
-void CommentIgnore():
-{}
-{
-    <COMMENT>
 }
 void ReturnStatement():
 {}
@@ -201,19 +194,10 @@ void MethodDeclaration():
     | <PROTECTED> {System.out.print("protected ");}) 
     (<STATIC> {System.out.print("static ");})? 
     (<VOID> {System.out.print("void ");} | t=<IDENTIFIER> {System.out.print(t.image+" ");} ) 
-    t=<IDENTIFIER> {System.out.print(t.image+" ");} <LPAREN> {System.out.print("(");} (CommaSeparatedSignatureList())? <RPAREN> {System.out.print(")");}
+    t=<IDENTIFIER> {System.out.print(t.image+" ");} <LPAREN> {System.out.print("(");} (CommaSeparatedExprList())? <RPAREN> {System.out.print(")");}
     <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
 }
-void CommaSeparatedSignatureList():
-{}
-{
-    DeclarationIdentifiers() (<COMMA>{System.out.print(",");} DeclarationIdentifiers())*
-}
-void DeclarationIdentifiers():
-{Token t;}
-{
-    t=<IDENTIFIER> {System.out.print(t.image+" ");} (<LBRACKET>{System.out.print("[");}<RBRACKET>{System.out.print("]");})? t=<IDENTIFIER>{System.out.print(t.image+" ");}
-}
+
 void WhileLoop():
 {}
 {
@@ -326,21 +310,19 @@ void ExprVal15():
     ExprVal16() (<INCREMENT> {System.out.print("++");}  | <DECREMENT> {System.out.print("--");} )?
 }
 void ExprVal16():
-{Token t, t1;}
+{Token t;}
 {
     <LPAREN> {System.out.print("(");} (ExprVal2())? <RPAREN> {System.out.print(")");} ExprVal16P()
-    | t=<IDENTIFIER> {System.out.print(t.image+" ");} (
-        LOOKAHEAD(2)
-        (<LBRACKET> {System.out.print("[");}<RBRACKET> {System.out.print("]");})? t1=<IDENTIFIER> {System.out.print(t1.image+" ");}
-        | ExprVal16P()
-      )
+    | t=<IDENTIFIER> {System.out.print(t.image+" ");} ExprVal16P()
     | ExprBase() 
 }
 void ExprVal16P():
 {Token t;}
 {
     
-    <LBRACKET> {System.out.print("[");} ExprVal2() <RBRACKET> {System.out.print("]");} ExprVal16P()
+    t=<IDENTIFIER> {System.out.print(t.image+" ");}
+    |
+    <LBRACKET> {System.out.print("[");} (ExprVal2())? <RBRACKET> {System.out.print("]");} ExprVal16P()
     |
     <DOT> {System.out.print(".");} t=<IDENTIFIER> {System.out.print(t.image+" ");} ExprVal16P()
     |
