@@ -1,7 +1,7 @@
 /*
- *  %java -classpath javacc.jar javacc gavel_parser.jj
- *  %javac gavel_parser.java
- *  %java gavel_parser
+ *  %java -classpath javacc.jar javacc MiniJava.jj
+ *  %javac MiniJava.java
+ *  %java MiniJava
  */
 
 options {
@@ -19,6 +19,8 @@ public class MiniJava {
     FileReader fileReader = new FileReader("PA03demo.java");
  
     MiniJava parser = new MiniJava(fileReader);
+    parser.Program();
+    /*
     try {
       MethodDeclList n = parser.Program();
 
@@ -33,6 +35,7 @@ public class MiniJava {
       System.out.println(e.getMessage());
       e.printStackTrace();
     }
+    */
   }
 
 
@@ -364,14 +367,7 @@ void ExprVal16P():
 void CommaSeparatedExprList():
 {}
 {
-    ExprVal2() CommaSeparatedExprListP()
-}
-void CommaSeparatedExprListP():
-{}
-{
-    <COMMA> {System.out.print(",");} ExprVal2() CommaSeparatedExprListP()
-    |
-    {}
+    ExprVal2() (<COMMA> {System.out.print(",");} ExprVal2())*
 }
 
 void ExprBase():
