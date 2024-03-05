@@ -40,4 +40,24 @@ public interface Visitor {
   public Object visit(VarDecl node, Object data);
   public Object visit(VarDeclList node, Object data);
   public Object visit(While node, Object data);
+  public Object visit(Throw node, Object data);
+  public Object visit(StringExp node, Object data);
+  public Object visit(Return node, Object data);
+  public Object visit(Or node, Object data);
+  public Object visit(Null node, Object data);
+  public Object visit(NotEquals node, Object data);
+  public Object visit(Multiply node, Object data);
+  public Object visit(Modulo node, Object data);
+  public Object visit(LessThanOrEqual node, Object data);
+  public Object visit(InstanceOf node, Object data);
+  public Object visit(Inline node, Object data);
+  public Object visit(GreaterThanOrEqual node, Object data);
+  public Object visit(GreaterThan node, Object data);
+  public Object visit(Exponent node, Object data);
+  public Object visit(Equals node, Object data);
+  public Object visit(Divide node, Object data);
+  public Object visit(Continue node, Object data);
+  public Object visit(CharacterExp node, Object data);
+  public Object visit(Break node, Object data);
+  public Object visit(Attribute node, Object data);
 }

@@ -477,6 +477,85 @@ public class TypeCheckingVisitor implements Visitor {
 
         return data; 
     }
+    public Object visit(Throw node, Object data){ 
+        return null;
+    }
+    public Object visit(StringExp node, Object data){ 
+        return null;
+    }
+    public Object visit(Return node, Object data){ 
+        //return ...
+        return null;
+    }
+    public Object visit(Or node, Object data){
+        return null;
+    }
+    public Object visit(Null node, Object data){ 
+         return null; 
+    }
+
+    public Object visit(NotEquals node, Object data){ 
+         return null;
+    }
+
+    public Object visit(Multiply node, Object data){ 
+         return null;
+    }
+
+    public Object visit(Modulo node, Object data){ 
+         return null; 
+    }
+
+    public Object visit(LessThanOrEqual node, Object data){ 
+         return null;
+    }
+
+    public Object visit(InstanceOf node, Object data){ 
+        //a istanceof b
+        return null;
+    }
+
+    public Object visit(Inline node, Object data){ 
+        //conditional ? if_true : if_false
+        return null;
+    }
+    
+    public Object visit(GreaterThanOrEqual node, Object data){
+        return null; 
+    }
+
+    public Object visit(GreaterThan node, Object data){ 
+        return null; 
+    }
+
+    public Object visit(Exponent node, Object data){
+        return null; 
+    }
+
+    public Object visit(Equals node, Object data){
+         return null;
+    }
+
+    public Object visit(Divide node, Object data){ 
+        return null;
+    }
+
+    public Object visit(Continue node, Object data){
+        //continue statement
+        return null;
+    }
+
+    public Object visit(CharacterExp node, Object data){ 
+         return null; 
+    }
+
+    public Object visit(Break node, Object data){
+        return null;
+    }
+
+    public Object visit(Attribute node, Object data){ 
+         return null;
+    }
 
 }
 

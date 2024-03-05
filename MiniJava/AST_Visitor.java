@@ -227,8 +227,12 @@ import syntaxtree.*;
         if (node.e1!=null){
              node.e1.accept(this,data);
         }
-        node.i.accept(this,data);
-        node.e2.accept(this,data);
+        if (node.i != null){
+             node.i.accept(this,data);
+        }
+        if (node.e2 != null){
+             node.e2.accept(this,data);
+        }
         --indent;
         return data;
    }
@@ -367,6 +371,139 @@ import syntaxtree.*;
         --indent;
         return data;
    }
+
+
+   /*BELOW: START OF NEW METHODS */
+   public Object visit(Throw node, Object data){ 
+        System.out.println(indentString() + getClassName(node));
+        //throw ...
+        node.e.accept(this, data);
+        return data; 
+    }
+    public Object visit(StringExp node, Object data){ 
+        System.out.println(indentString() + getClassName(node));
+        return data; 
+    }
+    public Object visit(Return node, Object data){ 
+        //return ...
+        System.out.println(indentString() + getClassName(node));
+        node.e.accept(this, data);
+        return data; 
+    }
+    public Object visit(Or node, Object data){
+        System.out.println(indentString() + getClassName(node)); 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+    public Object visit(Null node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        return data; 
+    }
+
+    public Object visit(NotEquals node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Multiply node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Modulo node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(LessThanOrEqual node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(InstanceOf node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        //a istanceof b
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Inline node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        //conditional ? if_true : if_false
+        node.conditional.accept(this, data);
+        node.if_true.accept(this, data);
+        node.if_false.accept(this, data);
+        return data; 
+    }
+    
+    public Object visit(GreaterThanOrEqual node, Object data){
+         System.out.println(indentString() + getClassName(node)); 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(GreaterThan node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Exponent node, Object data){
+         System.out.println(indentString() + getClassName(node)); 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Equals node, Object data){
+         System.out.println(indentString() + getClassName(node)); 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Divide node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Continue node, Object data){
+         System.out.println(indentString() + getClassName(node)); 
+        //continue statement
+        return data; 
+    }
+
+    public Object visit(CharacterExp node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        return data; 
+    }
+
+    public Object visit(Break node, Object data){
+         System.out.println(indentString() + getClassName(node)); 
+        //break statement
+        return data; 
+    }
+
+    public Object visit(Attribute node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e.accept(this, data);
+        node.i.accept(this, data);
+        return data; 
+    }
 }
 
  

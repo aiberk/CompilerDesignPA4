@@ -16,26 +16,13 @@ public class MiniJava {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("PA03demo.java");
+    FileReader fileReader = new FileReader("ast_test1.java");
  
     MiniJava parser = new MiniJava(fileReader);
-    parser.Program();
-    /*
-    try {
-      MethodDeclList n = parser.Program();
+    Statement s = parser.Program();
+    Visitor v1 = new AST_Visitor();
+    s.accept(v1, 0);
 
-      System.out.println("\n\nPretty Printing the Abstract Syntax Tree");
-      Visitor v1 = new AST_Visitor();  // pretty prints the Abstract Syntax Tree
-      n.accept(v1, 0);
-
-      System.out.println("\n\nDone!");
-
-    } catch (Exception e) {
-      System.out.println("Oops.");
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-    }
-    */
   }
 
 
@@ -149,17 +136,19 @@ TOKEN:
 
 /* Program Syntax */
 
-void Program():
-{}
+Statement Program():
+{Statement s1;}
 {
-  StatementBlock()
+
+  /*StatementBlock()*/
+  s1 = Assignment()
   <EOF>
+  {return s1;}
 }
 void StatementBlock():
 {}
 {
-    (ExprVal1() <SEMICOLON> {System.out.print(";");}
-    |ReturnStatement()
+    ReturnStatement()
     |ClassDeclaration()
     |MethodDeclaration()
     |WhileLoop()
@@ -169,7 +158,7 @@ void StatementBlock():
     |BreakStatement()
     |ContinueStatement()
     |ThrowStatement()
-    |IfBlock())*
+    |IfBlock()
 }
 void CommentIgnore():
 {}
@@ -179,7 +168,7 @@ void CommentIgnore():
 void ReturnStatement():
 {}
 {
-    <RETURN> {System.out.print("return ");} (ExprVal1())? <SEMICOLON> {System.out.print(";");}
+    <RETURN> {System.out.print("return ");} (ExprVal2())? <SEMICOLON> {System.out.print(";");}
 }
 void BreakStatement():
 {}
@@ -239,13 +228,13 @@ void WhileLoop():
 void ForLoop():
 {}
 {
-    <FOR> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} ExprVal1() <SEMICOLON> {System.out.print("; ");} ExprVal1() <SEMICOLON> {System.out.print("; ");} ExprVal1() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
+    <FOR> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} ExprVal2() <SEMICOLON> {System.out.print("; ");} ExprVal2() <SEMICOLON> {System.out.print("; ");} ExprVal2() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
 }
 void ForEachLoop():
 {Token t;}
 {
 
-    <FOREACH> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} <COLON> {System.out.print(": ");} ExprVal1() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
+    <FOREACH> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} <COLON> {System.out.print(": ");} ExprVal2() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
 }
 
 void ClassDeclaration():
@@ -267,116 +256,213 @@ void ClassExtendsListP():
     |{}
 }
 
-void ExprVal1():
-{}
+VarDecl TypeDeclaration():
+{Token t1, t2; boolean is_array = false;}
 {
-    ExprVal2() ((<ASSIGNMENT> {System.out.print("=");}
-        | <PLUS_EQUALS> {System.out.print("+=");}
-        | <MINUS_EQUALS> {System.out.print("-=");}
-        | <FORWARD_SLASH_EQUALS> {System.out.print("/=");}
-        | <PERCENT_EQUALS> {System.out.print("%=");}
-        ) ExprVal1())?
+  t1=<IDENTIFIER>(<LBRACKET><RBRACKET> {is_array = true;})? t2=<IDENTIFIER> <COMMA>
+  {return new VarDecl(new Identifier(t1.image), new Identifier(t2.image), is_array);}
 }
-void ExprVal2():
-{}
+
+Statement Assignment():
+{Token t1; Exp e1 = null; Exp e2;}
 {
-    ExprVal3() (<QUESTIONMARK> {System.out.print("?");} ExprVal3() <COLON> {System.out.print(":");} ExprVal2())?
+    t1=<IDENTIFIER>(<LBRACKET>e1 = ExprVal2()<RBRACKET>)? <ASSIGNMENT> e2 = ExprVal2()
+    {
+      if (e1 != null){
+        return new ArrayAssign(new Identifier(t1.image), e1, e2);
+      }
+      return new Assign(new Identifier(t1.image), e2);
+    }
 }
-void ExprVal3():
-{}
+Exp ExprVal2():
+{Exp e1; Exp if_true = null; Exp if_false = null;}
+{
+    e1 = ExprVal3() (<QUESTIONMARK> if_true = ExprVal3() <COLON> if_false = ExprVal2())?
+    {
+      if (if_true != null){
+        return new Inline(e1, if_true, if_false);
+      }
+      return e1;
+    }
+}
+Exp ExprVal3():
+{Exp e1; Exp e2 = null;}
 {
 
-    ExprVal4() (<OR> {System.out.print("||");} ExprVal3())?
+    e1 = ExprVal4() (<OR> e2 = ExprVal3())?
+    {
+      if (e2 != null){
+        return new Or(e1, e2);
+      }
+      return e1;
+    }
 }
-void ExprVal4():
-{}
+Exp ExprVal4():
+{Exp e1; Exp e2 = null;}
 {
 
-    ExprVal8() (<AND> {System.out.print("&&");} ExprVal4())?
+    e1 = ExprVal8() (<AND> e2 = ExprVal4())?
+    {
+      if (e2 != null){
+        return new And(e1, e2);
+      }
+      return e1;
+    }
 }
-void ExprVal8():
-{}
+Exp ExprVal8():
+{Exp e1; boolean equals = false; boolean not_equals = false; Exp e2 = null;}
 {
 
-    ExprVal9() ((<EQUALS> {System.out.print("==");} | <NOT_EQUALS> {System.out.print("!=");}) ExprVal8())?
+    e1 = ExprVal9() ((<EQUALS> {equals = true;} | <NOT_EQUALS> {not_equals = true;}) e2 = ExprVal8())?
+    {
+      if (e2 != null){
+        if (equals){
+          return new Equals(e1, e2);
+        }
+        return new NotEquals(e1, e2);
+      }
+      return e1;
+    }
 }
-void ExprVal9():
-{}
+Exp ExprVal9():
+{Exp e1; Exp e2 = null; boolean lt = false; boolean le = false; boolean gt = false; boolean ge = false; boolean instf = false;}
 {
 
-    ExprVal11() ((<LT> {System.out.print("<");}  | <LE> {System.out.print("<=");}| <GT> {System.out.print(">");}| <GE> {System.out.print(">=");}| <INSTANCEOF> {System.out.print("instanceof");}) ExprVal9())?
+    e1 = ExprVal11() ((<LT> {lt = true;}  | <LE> {le = true;}| <GT> {gt = true;}| <GE> {ge = true;}| <INSTANCEOF> {instf = true;}) e2 = ExprVal9())?
+    {
+      if (e2 != null){
+        if (lt){
+          return new LessThan(e1, e2);
+        }
+        if (le){
+          return new LessThanOrEqual(e1, e2);
+        }
+        if (gt){
+          return new GreaterThan(e1, e2);
+        }
+        if (ge){
+          return new GreaterThanOrEqual(e1, e2);
+        }
+        return new InstanceOf(e1, e2);
+      }
+      return e1;
+    }
+}
+Exp ExprVal11():
+{Exp e1; Exp e2 = null; boolean plus = false; boolean minus = false;}
+{
+    e1 = ExprVal12() ((<PLUS> {plus = true;}  | <MINUS> {minus = true;} ) e2 = ExprVal11())?
+    {
+      if (e2 != null){
+        if (plus){
+          return new Plus(e1, e2);
+        }
+        return new Minus(e1, e2);
+      }
+      return e1;
+    }
+}
+Exp ExprVal12():
+{Exp e1; Exp e2 = null; boolean mul = false; boolean div = false; boolean mod = false;}
+{
+
+    e1 = ExprVal13__() ((<STAR> {mul = true;} | <FORWARD_SLASH> {div = true;} | <PERCENT> {mod = true;} ) e2 = ExprVal12())?
+    {
+      if (e2 != null){
+        if (mul){
+          return new Multiply(e1, e2);
+        }
+        if (div){
+          return new Divide(e1, e2);
+        }
+        return new Modulo(e1, e2);
+      }
+      return e1;
+    }
 
 }
-void ExprVal11():
-{}
+Exp ExprVal13__():
+{Exp e1; Exp e2 = null;}
 {
-    ExprVal12() ((<PLUS> {System.out.print("+");}  | <MINUS> {System.out.print("-");} ) ExprVal11())?
+    e1 = ExprVal13() (<EXPONENT> e2 = ExprVal13__())?
+    {
+      if (e2 != null){
+        return new Exponent(e1, e2);
+      }
+      return e1;
+    }
+}
+Exp ExprVal13():
+{Exp e1 = null; Exp e2 = null;}
+{
+    (<NEW> e2 = ExprVal14()
+    | e1 = ExprVal14())
+    {
+      if (e2 != null){
+        return new NewObject(e2);
+      }
+      return e1;
+    }
+}
+Exp ExprVal14():
+{Exp e1 = null; Exp e2 = null;}
+{
+    (<BOOL_NEG> e2 = ExprVal16()
+    | e1 = ExprVal15())
+    {
+      if (e2 != null){
+        return new Not(e2);
+      }
+      return e1;
+    }
+}
+Exp ExprVal15():
+{Exp e1;}
+{
+    /*ExprVal16() (<INCREMENT> {System.out.print("++");}  | <DECREMENT> {System.out.print("--");} )? */
+    e1 = ExprVal16()
+    {return e1;}
+}
+Exp ExprVal16():
+{Token t; Exp e1 = null; Exp e2;}
+{
+    (<LPAREN> e2 = ExprVal2() <RPAREN> e1 = ExprVal16P(new ExpGroup(e2))
+    | t=<IDENTIFIER> e1 = ExprVal16P(new IdentifierExp(t.image))
+    | e1 = ExprBase())
 
+    {return e1;}
 }
-void ExprVal12():
-{}
-{
-
-    ExprVal13__() ((<STAR> {System.out.print("*");} | <FORWARD_SLASH> {System.out.print("/");} | <PERCENT> {System.out.print("%");} ) ExprVal12())?
-}
-void ExprVal13__():
-{}
-{
-    ExprVal13() (<EXPONENT> ExprVal13__())?
-}
-void ExprVal13():
-{}
-{
-    <NEW> {System.out.print("new");} ExprVal14()
-    | ExprVal14()
-}
-void ExprVal14():
-{}
-{
-    <BOOL_NEG> {System.out.print("!");} ExprVal16()
-    | ExprVal15()
-}
-void ExprVal15():
-{}
-{
-    ExprVal16() (<INCREMENT> {System.out.print("++");}  | <DECREMENT> {System.out.print("--");} )?
-}
-void ExprVal16():
-{Token t, t1;}
-{
-    <LPAREN> {System.out.print("(");} (ExprVal2())? <RPAREN> {System.out.print(")");} ExprVal16P()
-    | t=<IDENTIFIER> {System.out.print(t.image+" ");} (
-        LOOKAHEAD(2)
-        (<LBRACKET> {System.out.print("[");}<RBRACKET> {System.out.print("]");})? t1=<IDENTIFIER> {System.out.print(t1.image+" ");}
-        | ExprVal16P()
-      )
-    | ExprBase() 
-}
-void ExprVal16P():
-{Token t;}
+Exp ExprVal16P(Exp _e1):
+{Token t; Exp e1 = null; Exp e2; ExpList l1 = null;}
 {
     
-    <LBRACKET> {System.out.print("[");} ExprVal2() <RBRACKET> {System.out.print("]");} ExprVal16P()
+    (<LBRACKET> e2 = ExprVal2() <RBRACKET> e1 = ExprVal16P(new ArrayLookup(_e1, e2))
     |
-    <DOT> {System.out.print(".");} t=<IDENTIFIER> {System.out.print(t.image+" ");} ExprVal16P()
+    <DOT> t=<IDENTIFIER> e1 = ExprVal16P(new Attribute(_e1, new Identifier(t.image)))
     |
-    <LPAREN> {System.out.print("(");} (CommaSeparatedExprList())* <RPAREN> {System.out.print(")");} ExprVal16P()
-    |
-    {}
+    <LPAREN> (l1 = CommaSeparatedExprList())? <RPAREN> e1 = ExprVal16P(new Call(_e1, null, l1))
+    |{})
+    {
+      if (e1 != null){
+        return e1;
+      }
+      return _e1;
+    }
 }
-void CommaSeparatedExprList():
-{}
+ExpList CommaSeparatedExprList():
+{Exp a, b; ExpList e1;}
 {
-    ExprVal2() (<COMMA> {System.out.print(",");} ExprVal2())*
+    a = ExprVal2() {e1 = new ExpList(null, a);} (<COMMA> b = ExprVal2() {e1 = new ExpList(e1, b);})*
+    {return e1;}
 }
 
-void ExprBase():
-{Token t;}
+Exp ExprBase():
+{Token t; Exp e1;}
 {
-    t=<STRING> {System.out.print(t.image+" ");}
-    | t=<INTEGER> {System.out.print(t.image+" ");}
-    | t=<CHARACTER> {System.out.print(t.image+" ");}
-    | t=<NULL>{System.out.print(t.image+" ");}
-    | t=<TRUE>{System.out.print(t.image+" ");}
-    | t=<FALSE>{System.out.print(t.image+" ");}
+    t=<STRING> {e1 = new StringExp(t.image); return e1;}
+    | t=<INTEGER> {e1 = new IntegerLiteral(Integer.parseInt(t.image)); return e1;}
+    | t=<CHARACTER> {e1 = new CharacterExp(t.image); return e1;}
+    | t=<NULL>{e1 = new Null(); return e1;}
+    | t=<TRUE>{e1 = new True(); return e1;}
+    | t=<FALSE>{e1 = new False();return e1;}
 }

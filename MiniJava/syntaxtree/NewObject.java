@@ -1,9 +1,9 @@
 package syntaxtree;
 
 public class NewObject extends Exp{
-    public Identifier i;
+    public Exp i;
     
-    public NewObject(Identifier i){
+    public NewObject(Exp i){
         this.i=i;
     }
 

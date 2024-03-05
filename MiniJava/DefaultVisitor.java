@@ -368,5 +368,116 @@ public class DefaultVisitor implements Visitor {
         return data; 
     }
 
+    public Object visit(Throw node, Object data){ 
+        
+        node.e.accept(this, data);
+        return data; 
+    }
+    public Object visit(StringExp node, Object data){ 
+        
+        return data; 
+    }
+    public Object visit(Return node, Object data){ 
+        node.e.accept(this, data);
+        return data; 
+    }
+    public Object visit(Or node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+    public Object visit(Null node, Object data){ 
+        return data; 
+    }
+
+    public Object visit(NotEquals node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Multiply node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Modulo node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(LessThanOrEqual node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(InstanceOf node, Object data){ 
+        //a istanceof b
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Inline node, Object data){ 
+        //conditional ? if_true : if_false
+        node.conditional.accept(this, data);
+        node.if_true.accept(this, data);
+        node.if_false.accept(this, data);
+        return data; 
+    }
+    
+    public Object visit(GreaterThanOrEqual node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(GreaterThan node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Exponent node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Equals node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Divide node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Continue node, Object data){ 
+        //continue statement
+        return data; 
+    }
+
+    public Object visit(CharacterExp node, Object data){ 
+        return data; 
+    }
+
+    public Object visit(Break node, Object data){ 
+        //break statement
+        return data; 
+    }
+
+    public Object visit(Attribute node, Object data){ 
+        node.e.accept(this, data);
+        node.i.accept(this, data);
+        return data; 
+    }
+
 }
 
