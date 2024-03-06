@@ -2,7 +2,10 @@ n[(new K(true ? 10 : null)).l] = d.setValues(num, !(n instanceof k), true)[james
 a = b*2 + 1;
 System.out.printline("James");
 if (k[h.j]*2 == 1){
-    j = k;
+    while (true){
+        j();
+        break;
+    }
 }
 else if (false){
 

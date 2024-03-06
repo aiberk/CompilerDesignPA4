@@ -157,7 +157,9 @@ import syntaxtree.*;
         System.out.println(indentString() + getClassName(node));
         ++indent;
         node.e.accept(this,data);
-        node.s.accept(this,data);
+        if (node.s != null){
+            node.s.accept(this, data);
+        }
         --indent;
         return data;
    }

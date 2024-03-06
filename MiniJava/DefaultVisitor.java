@@ -379,7 +379,9 @@ public class DefaultVisitor implements Visitor {
         Exp e=node.e;
         Statement s=node.s;
         node.e.accept(this, data);
-        node.s.accept(this, data);
+        if (node.s != null){
+            node.s.accept(this, data);
+        }
 
         return data; 
     }

@@ -157,6 +157,9 @@ Statement Statement():
   (LOOKAHEAD(4)
   s = Assignment() <SEMICOLON>
   |s = IfBlock()
+  |s = WhileLoop()
+  |s = Continue() <SEMICOLON>
+  |s = Break() <SEMICOLON>
   |s = ExpStatement() <SEMICOLON>)
   {return s;}
 }
@@ -170,8 +173,6 @@ void StatementBlock():
     |ForLoop()
     |CommentIgnore()
     |ForEachLoop()
-    |BreakStatement()
-    |ContinueStatement()
     |ThrowStatement()
     |IfBlock()
 }
@@ -185,15 +186,17 @@ void ReturnStatement():
 {
     <RETURN> {System.out.print("return ");} (ExprVal2())? <SEMICOLON> {System.out.print(";");}
 }
-void BreakStatement():
+Break Break():
 {}
 {
-    <BREAK>{System.out.print("break ");} <SEMICOLON> {System.out.print(";");}
+    <BREAK>
+    {return new Break();}
 }
-void ContinueStatement():
+Continue Continue():
 {}
 {
-    <CONTINUE>{System.out.print("break ");} <SEMICOLON> {System.out.print(";");}
+    <CONTINUE>
+    {return new Continue();}
 }
 void ThrowStatement():
 {}
@@ -232,11 +235,12 @@ void DeclarationIdentifiers():
 {
     t=<IDENTIFIER> {System.out.print(t.image+" ");} (<LBRACKET>{System.out.print("[");}<RBRACKET>{System.out.print("]");})? t=<IDENTIFIER>{System.out.print(t.image+" ");}
 }
-void WhileLoop():
-{}
+While WhileLoop():
+{Exp e; StatementList s;}
 {
-    <WHILE> {System.out.print("while ");} <LPAREN> {System.out.print("( ");} ExprVal2() <RPAREN> {System.out.print(") ");}
-    <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
+    <WHILE> <LPAREN> e = ExprVal2() <RPAREN>
+    <LBRACE> s = StatementList() <RBRACE>
+    {return new While(e, s);}
 }
 void ForLoop():
 {}

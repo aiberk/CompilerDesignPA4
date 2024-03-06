@@ -30,10 +30,13 @@ public class MiniJava implements MiniJavaConstants {
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IF:
+      case WHILE:
+      case BREAK:
       case NEW:
       case NULL:
       case TRUE:
       case FALSE:
+      case CONTINUE:
       case IDENTIFIER:
       case INTEGER:
       case CHARACTER:
@@ -62,6 +65,17 @@ public class MiniJava implements MiniJavaConstants {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IF:
         s = IfBlock();
+        break;
+      case WHILE:
+        s = WhileLoop();
+        break;
+      case CONTINUE:
+        s = Continue();
+        jj_consume_token(SEMICOLON);
+        break;
+      case BREAK:
+        s = Break();
+        jj_consume_token(SEMICOLON);
         break;
       case NEW:
       case NULL:
@@ -111,12 +125,6 @@ public class MiniJava implements MiniJavaConstants {
     case FOREACH:
       ForEachLoop();
       break;
-    case BREAK:
-      BreakStatement();
-      break;
-    case CONTINUE:
-      ContinueStatement();
-      break;
     case THROW:
       ThrowStatement();
       break;
@@ -158,18 +166,16 @@ public class MiniJava implements MiniJavaConstants {
                                                                        System.out.print(";");
   }
 
-  static final public void BreakStatement() throws ParseException {
+  static final public Break Break() throws ParseException {
     jj_consume_token(BREAK);
-            System.out.print("break ");
-    jj_consume_token(SEMICOLON);
-                                                      System.out.print(";");
+     {if (true) return new Break();}
+    throw new Error("Missing return statement in function");
   }
 
-  static final public void ContinueStatement() throws ParseException {
+  static final public Continue Continue() throws ParseException {
     jj_consume_token(CONTINUE);
-               System.out.print("break ");
-    jj_consume_token(SEMICOLON);
-                                                         System.out.print(";");
+     {if (true) return new Continue();}
+    throw new Error("Missing return statement in function");
   }
 
   static final public void ThrowStatement() throws ParseException {
@@ -324,19 +330,17 @@ public class MiniJava implements MiniJavaConstants {
                                                                                                                                            System.out.print(t.image+" ");
   }
 
-  static final public void WhileLoop() throws ParseException {
+  static final public While WhileLoop() throws ParseException {
+ Exp e; StatementList s;
     jj_consume_token(WHILE);
-             System.out.print("while ");
     jj_consume_token(LPAREN);
-                                                    System.out.print("( ");
-    ExprVal2();
+    e = ExprVal2();
     jj_consume_token(RPAREN);
-                                                                                                  System.out.print(") ");
     jj_consume_token(LBRACE);
-              System.out.print("{");
-    StatementBlock();
+    s = StatementList();
     jj_consume_token(RBRACE);
-                                                                 System.out.print("}");
+     {if (true) return new While(e, s);}
+    throw new Error("Missing return statement in function");
   }
 
   static final public void ForLoop() throws ParseException {
@@ -938,25 +942,17 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(0, xla); }
   }
 
-  static private boolean jj_3R_16() {
-    if (jj_3R_20()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_21()) jj_scanpos = xsp;
-    return false;
-  }
-
   static private boolean jj_3R_57() {
-    return false;
-  }
-
-  static private boolean jj_3R_35() {
-    if (jj_scan_token(PERCENT)) return true;
     return false;
   }
 
   static private boolean jj_3R_22() {
     if (jj_scan_token(LT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_35() {
+    if (jj_scan_token(PERCENT)) return true;
     return false;
   }
 
@@ -1321,6 +1317,14 @@ public class MiniJava implements MiniJavaConstants {
     return false;
   }
 
+  static private boolean jj_3R_16() {
+    if (jj_3R_20()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_21()) jj_scanpos = xsp;
+    return false;
+  }
+
   static private boolean jj_initialized_once = false;
   /** Generated Token Manager. */
   static public MiniJavaTokenManager token_source;
@@ -1348,10 +1352,10 @@ public class MiniJava implements MiniJavaConstants {
       jj_la1_init_3();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1e00400,0x1e00400,0x365a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
+      jj_la1_0 = new int[] {0x1e06400,0x1e06400,0x325a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x78000000,0x78000000,0x4218002,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x8000000,0x80000000,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
+      jj_la1_1 = new int[] {0x78000002,0x78000002,0x4218000,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x8000000,0x80000000,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
    }
    private static void jj_la1_init_2() {
       jj_la1_2 = new int[] {0x20000001,0x20000001,0x0,0x20000001,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x4,0x4,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x1,0x20000001,0x40000005,0x0,0x0,};
