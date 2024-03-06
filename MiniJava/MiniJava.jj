@@ -207,7 +207,7 @@ MethodDecl MethodDeclaration():
     (<VOID> {type = new Identifier("void");} | t=<IDENTIFIER> {type = new Identifier(t.image);} ) 
     t1=<IDENTIFIER> {name = new Identifier(t1.image);} <LPAREN> (v = TypeDeclaration() {args = new VarDeclList(v, args);} (<COMMA> v = TypeDeclaration() {args = new VarDeclList(v, args);})*)? <RPAREN> 
     <LBRACE> 
-        (LOOKAHEAD(2) v = TypeDeclaration() <SEMICOLON> {vars = new VarDeclList(v, vars);})*
+        (LOOKAHEAD(4) v = TypeDeclaration() <SEMICOLON> {vars = new VarDeclList(v, vars);})*
         statements = StatementList()
         (<RETURN> returns = ExprVal2() <SEMICOLON>)?
      <RBRACE>)

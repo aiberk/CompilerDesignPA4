@@ -1,8 +1,6 @@
 class PA03demo{
    public static void  main(String[] args){
       System.out.println((new Demo()).go(10, 3));
-
-
    }
 }
 class Demo{
@@ -82,6 +80,10 @@ class Demo{
       return num;
 
 
+   }
+   public void original_tests(){
+       n[(new K(true ? 10 : null)).l] = d.setValues(num, !(n instanceof k), true)[james.joe]();
+       return 10;
    }
 
 

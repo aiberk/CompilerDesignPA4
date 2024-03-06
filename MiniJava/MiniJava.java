@@ -252,7 +252,7 @@ public class MiniJava implements MiniJavaConstants {
     jj_consume_token(LBRACE);
     label_5:
     while (true) {
-      if (jj_2_2(2)) {
+      if (jj_2_2(4)) {
         ;
       } else {
         break label_5;
@@ -944,6 +944,7 @@ public class MiniJava implements MiniJavaConstants {
 
   static private boolean jj_3R_13() {
     if (jj_scan_token(LBRACKET)) return true;
+    if (jj_scan_token(RBRACKET)) return true;
     return false;
   }
 
@@ -1203,6 +1204,7 @@ public class MiniJava implements MiniJavaConstants {
 
   static private boolean jj_3_2() {
     if (jj_3R_10()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 
