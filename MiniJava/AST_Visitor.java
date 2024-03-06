@@ -49,8 +49,12 @@ import syntaxtree.*;
         System.out.println(indentString() + getClassName(node));
         ++indent;
         node.i.accept(this,data);
-        node.v.accept(this,data);
-        node.m.accept(this,data);
+        if (node.v != null){
+            node.v.accept(this, data);
+        }
+        if (node.m != null){
+            node.m.accept(this, data);
+        }
         --indent;
         return data;
    }
@@ -65,18 +69,20 @@ import syntaxtree.*;
    public Object visit(MethodDecl node, Object data){
         System.out.println(indentString() + getClassName(node));
         ++indent;
-        node.t.accept(this,data);
-        node.i.accept(this,data);
-        if (node.f!=null){
-            node.f.accept(this,data);
+        node.type.accept(this, data);
+        node.name.accept(this, data);
+        if (node.args != null){
+            node.args.accept(this, data);
         }
-        if (node.v!=null){
-            node.v.accept(this,data);
+        if (node.vars != null){
+            node.vars.accept(this, data);
         }
-        if (node.s!=null){
-            node.s.accept(this,data);
+        if (node.statements != null){
+            node.statements.accept(this, data);
         }
-        node.e.accept(this,data);
+        if (node.returns != null){
+            node.returns.accept(this, data);
+        }
         --indent;
         return data;
    }

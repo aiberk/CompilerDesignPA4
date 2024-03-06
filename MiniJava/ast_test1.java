@@ -1,24 +1,88 @@
-n[(new K(true ? 10 : null)).l] = d.setValues(num, !(n instanceof k), true)[james.joe]();
-a = b*2 + 1;
-System.out.printline("James");
-if (k[h.j]*2 == 1){
-    while (true){
-        j();
-        break;
-    }
+class PA03demo{
+   public static void  main(String[] args){
+      System.out.println((new Demo()).go(10, 3));
+
+
+   }
 }
-else if (false){
-    k = new V(a, b, c);
-}
-else if (true){
-    print("HI!!");
-}
-else if (true){
-    print("HI!!");
-}
-else{
-    k[10] = null;
-}
-for (int i = f(); i > k(); i--){
-    System.out.println(i);
+class Demo{
+   int num;
+   int[] log;
+   boolean debugging;
+   public int setValues(int c1, int n1, boolean b1){
+      num = c1;
+      log = new int[n1];
+      debugging = b1;
+      if (lst instanceof StringList){
+            System.out.println("should not be seeing this");
+      }
+      return (log.length);
+
+
+   }
+   public int go(int num, int v){
+      Demo d;
+      int n;
+      d = new Demo();
+      n = 10;
+      n = d.setValues(num, n, true);
+      n = d.run(n);
+      return n;
+
+
+   }
+   public int run(int k){
+      int j;
+      int n;
+      int sum;
+      n = log.length;
+      sum = 0;
+      j = 1;
+      while((j < n) && (0 < j)){
+         if (j*j < n){
+            log[j] = j*j;
+
+
+         }
+         else{
+            log[j] = j*j-n;
+
+
+         }
+         System.out.println(sum);
+         sum = sum+log[j];
+         j = j+1;
+
+
+      }
+      System.out.println(sum);
+      return (sum);
+
+
+   }
+   public int misc(int v){
+      int tmp;
+      int c;
+      boolean e;
+      int f;
+      Demo d;
+      f = v+v*v;
+      tmp = f+num*num;
+      e = false;
+      d = new Demo();
+      e = e && e && e && e && (f+f)*f+f < f;
+      System.out.println(e);
+      return this.incr(tmp);
+
+
+   }
+   public int incr(int c){
+      System.out.println(c);
+      num = c+num;
+      return num;
+
+
+   }
+
+
 }

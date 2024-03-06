@@ -9,24 +9,36 @@ public class MiniJava implements MiniJavaConstants {
     FileReader fileReader = new FileReader("ast_test1.java");
 
     MiniJava parser = new MiniJava(fileReader);
-    StatementList s = parser.Program();
+    ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
 
   }
 
 /* Program Syntax */
-  static final public StatementList Program() throws ParseException {
- StatementList s1;
-    s1 = StatementList();
+  static final public ClassDeclList Program() throws ParseException {
+ ClassDeclList p = null; ClassDecl c;
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case CLASS:
+        ;
+        break;
+      default:
+        jj_la1[0] = jj_gen;
+        break label_1;
+      }
+      c = ClassDeclaration();
+                            p = new ClassDeclList(c, p);
+    }
     jj_consume_token(0);
-   {if (true) return s1;}
+   {if (true) return p;}
     throw new Error("Missing return statement in function");
   }
 
   static final public StatementList StatementList() throws ParseException {
  StatementList s1 = null; Statement s = null;
-    label_1:
+    label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case IF:
@@ -47,8 +59,8 @@ public class MiniJava implements MiniJavaConstants {
         ;
         break;
       default:
-        jj_la1[0] = jj_gen;
-        break label_1;
+        jj_la1[1] = jj_gen;
+        break label_2;
       }
       s = Statement();
                   s1 = new StatementList(s, s1);
@@ -95,7 +107,7 @@ public class MiniJava implements MiniJavaConstants {
         jj_consume_token(SEMICOLON);
         break;
       default:
-        jj_la1[1] = jj_gen;
+        jj_la1[2] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -104,58 +116,8 @@ public class MiniJava implements MiniJavaConstants {
     throw new Error("Missing return statement in function");
   }
 
-  static final public void StatementBlock() throws ParseException {
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case RETURN:
-      ReturnStatement();
-      break;
-    case CLASS:
-      ClassDeclaration();
-      break;
-    case PUBLIC:
-    case PRIVATE:
-    case PROTECTED:
-      MethodDeclaration();
-      break;
-    case COMMENT:
-      CommentIgnore();
-      break;
-    case THROW:
-      ThrowStatement();
-      break;
-    default:
-      jj_la1[2] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-  }
-
   static final public void CommentIgnore() throws ParseException {
     jj_consume_token(COMMENT);
-  }
-
-  static final public void ReturnStatement() throws ParseException {
-    jj_consume_token(RETURN);
-              System.out.print("return ");
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case NEW:
-    case NULL:
-    case TRUE:
-    case FALSE:
-    case IDENTIFIER:
-    case INTEGER:
-    case CHARACTER:
-    case STRING:
-    case LPAREN:
-    case BOOL_NEG:
-      ExprVal2();
-      break;
-    default:
-      jj_la1[3] = jj_gen;
-      ;
-    }
-    jj_consume_token(SEMICOLON);
-                                                                       System.out.print(";");
   }
 
   static final public Break Break() throws ParseException {
@@ -187,15 +149,15 @@ public class MiniJava implements MiniJavaConstants {
     jj_consume_token(LBRACE);
     if_block = StatementList();
     jj_consume_token(RBRACE);
-    label_2:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ELSEIF:
         ;
         break;
       default:
-        jj_la1[4] = jj_gen;
-        break label_2;
+        jj_la1[3] = jj_gen;
+        break label_3;
       }
       jj_consume_token(ELSEIF);
       jj_consume_token(LPAREN);
@@ -214,112 +176,105 @@ public class MiniJava implements MiniJavaConstants {
       jj_consume_token(RBRACE);
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[4] = jj_gen;
       ;
     }
      {if (true) return new If(e, if_block, elif_block, else_block);}
     throw new Error("Missing return statement in function");
   }
 
-  static final public void MethodDeclaration() throws ParseException {
- Token t;
+  static final public MethodDecl MethodDeclaration() throws ParseException {
+ Token t, t1; Identifier type, name; VarDecl v; VarDeclList args = null; VarDeclList vars = null; StatementList statements = null; Exp returns = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case PUBLIC:
       jj_consume_token(PUBLIC);
-               System.out.print("public ");
       break;
     case PRIVATE:
       jj_consume_token(PRIVATE);
-                 System.out.print("private ");
       break;
     case PROTECTED:
       jj_consume_token(PROTECTED);
-                   System.out.print("protected ");
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case STATIC:
       jj_consume_token(STATIC);
-               System.out.print("static ");
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[6] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VOID:
       jj_consume_token(VOID);
-             System.out.print("void ");
+             type = new Identifier("void");
       break;
     case IDENTIFIER:
       t = jj_consume_token(IDENTIFIER);
-                                                           System.out.print(t.image+" ");
+                                                               type = new Identifier(t.image);
       break;
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[7] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
-    t = jj_consume_token(IDENTIFIER);
-                    System.out.print(t.image+" ");
+    t1 = jj_consume_token(IDENTIFIER);
+                     name = new Identifier(t1.image);
     jj_consume_token(LPAREN);
-                                                              System.out.print("(");
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IDENTIFIER:
-      CommaSeparatedSignatureList();
+      v = TypeDeclaration();
+                                                                                        args = new VarDeclList(v, args);
+      label_4:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case COMMA:
+          ;
+          break;
+        default:
+          jj_la1[8] = jj_gen;
+          break label_4;
+        }
+        jj_consume_token(COMMA);
+        v = TypeDeclaration();
+                                                                                                                                                          args = new VarDeclList(v, args);
+      }
       break;
     default:
       jj_la1[9] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
-                                                                                                                                 System.out.print(")");
     jj_consume_token(LBRACE);
-              System.out.print("{");
-    StatementBlock();
-    jj_consume_token(RBRACE);
-                                                                 System.out.print("}");
-  }
-
-  static final public void CommaSeparatedSignatureList() throws ParseException {
-    DeclarationIdentifiers();
-    label_3:
+    label_5:
     while (true) {
-      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case COMMA:
+      if (jj_2_2(2)) {
         ;
-        break;
-      default:
-        jj_la1[10] = jj_gen;
-        break label_3;
+      } else {
+        break label_5;
       }
-      jj_consume_token(COMMA);
-                                      System.out.print(",");
-      DeclarationIdentifiers();
+      v = TypeDeclaration();
+      jj_consume_token(SEMICOLON);
+                                                         vars = new VarDeclList(v, vars);
     }
-  }
-
-  static final public void DeclarationIdentifiers() throws ParseException {
- Token t;
-    t = jj_consume_token(IDENTIFIER);
-                    System.out.print(t.image+" ");
+    statements = StatementList();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case LBRACKET:
-      jj_consume_token(LBRACKET);
-                                                                System.out.print("[");
-      jj_consume_token(RBRACKET);
-                                                                                                  System.out.print("]");
+    case RETURN:
+      jj_consume_token(RETURN);
+      returns = ExprVal2();
+      jj_consume_token(SEMICOLON);
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[10] = jj_gen;
       ;
     }
-    t = jj_consume_token(IDENTIFIER);
-                                                                                                                                           System.out.print(t.image+" ");
+    jj_consume_token(RBRACE);
+      {if (true) return new MethodDecl(type, name, args, vars, statements, returns);}
+    throw new Error("Missing return statement in function");
   }
 
   static final public While WhileLoop() throws ParseException {
@@ -356,7 +311,7 @@ public class MiniJava implements MiniJavaConstants {
       jj_consume_token(DECREMENT);
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[11] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -385,55 +340,47 @@ public class MiniJava implements MiniJavaConstants {
                                                                                                                                                                                                                                     System.out.print(") ");
     jj_consume_token(LBRACE);
                                                                                                                                                                                                                                                                        System.out.print("{");
-    StatementBlock();
     jj_consume_token(RBRACE);
-                                                                                                                                                                                                                                                                                                                          System.out.print("}");
+                                                                                                                                                                                                                                                                                                          System.out.print("}");
   }
 
-  static final public void ClassDeclaration() throws ParseException {
- Token t;
+  static final public ClassDecl ClassDeclaration() throws ParseException {
+ Token t; VarDecl v; VarDeclList vl = null; MethodDecl m; MethodDeclList ml = null;
     jj_consume_token(CLASS);
-             System.out.print("class ");
     t = jj_consume_token(IDENTIFIER);
-                                                          System.out.print(t.image+" ");
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case EXTENDS:
-      jj_consume_token(EXTENDS);
-                                                                                                      System.out.print("extends ");
-      ClassExtendsList();
-      break;
-    default:
-      jj_la1[13] = jj_gen;
-      ;
-    }
     jj_consume_token(LBRACE);
-              System.out.print("{");
-    StatementBlock();
-    jj_consume_token(RBRACE);
-                                                                 System.out.print("}");
-  }
-
-  static final public void ClassExtendsList() throws ParseException {
- Token t;
-    t = jj_consume_token(IDENTIFIER);
-                   System.out.print(t.image+" ");
-    ClassExtendsListP();
-  }
-
-  static final public void ClassExtendsListP() throws ParseException {
- Token t;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case COMMA:
-      jj_consume_token(COMMA);
-             System.out.print(", ");
-      t = jj_consume_token(IDENTIFIER);
-                                                     System.out.print(t.image+" ");
-      ClassExtendsListP();
-      break;
-    default:
-      jj_la1[14] = jj_gen;
-
+    label_6:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[12] = jj_gen;
+        break label_6;
+      }
+      v = TypeDeclaration();
+      jj_consume_token(SEMICOLON);
+                                          vl = new VarDeclList(v, vl);
     }
+    label_7:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case PUBLIC:
+      case PRIVATE:
+      case PROTECTED:
+        ;
+        break;
+      default:
+        jj_la1[13] = jj_gen;
+        break label_7;
+      }
+      m = MethodDeclaration();
+                                ml = new MethodDeclList(m, ml);
+    }
+    jj_consume_token(RBRACE);
+     {if (true) return new ClassDecl(new Identifier(t.image), vl, ml);}
+    throw new Error("Missing return statement in function");
   }
 
   static final public Statement ExpStatement() throws ParseException {
@@ -453,11 +400,10 @@ public class MiniJava implements MiniJavaConstants {
                                         is_array = true;
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
     t2 = jj_consume_token(IDENTIFIER);
-    jj_consume_token(COMMA);
    {if (true) return new VarDecl(new Identifier(t1.image), new Identifier(t2.image), is_array);}
     throw new Error("Missing return statement in function");
   }
@@ -472,7 +418,7 @@ public class MiniJava implements MiniJavaConstants {
       jj_consume_token(RBRACKET);
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
     jj_consume_token(ASSIGNMENT);
@@ -495,7 +441,7 @@ public class MiniJava implements MiniJavaConstants {
       if_false = ExprVal2();
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
       if (if_true != null){
@@ -514,7 +460,7 @@ public class MiniJava implements MiniJavaConstants {
       e2 = ExprVal3();
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[17] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -533,7 +479,7 @@ public class MiniJava implements MiniJavaConstants {
       e2 = ExprVal4();
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[18] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -559,14 +505,14 @@ public class MiniJava implements MiniJavaConstants {
                                                                 not_equals = true;
         break;
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[19] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal8();
       break;
     default:
-      jj_la1[21] = jj_gen;
+      jj_la1[20] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -610,14 +556,14 @@ public class MiniJava implements MiniJavaConstants {
                                                                                                                    instf = true;
         break;
       default:
-        jj_la1[22] = jj_gen;
+        jj_la1[21] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal9();
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[22] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -655,14 +601,14 @@ public class MiniJava implements MiniJavaConstants {
                                                          minus = true;
         break;
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[23] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal11();
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[24] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -696,14 +642,14 @@ public class MiniJava implements MiniJavaConstants {
                                                                                            mod = true;
         break;
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[25] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal12();
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[26] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -728,7 +674,7 @@ public class MiniJava implements MiniJavaConstants {
       e2 = ExprVal13__();
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[27] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -757,7 +703,7 @@ public class MiniJava implements MiniJavaConstants {
       e1 = ExprVal14();
       break;
     default:
-      jj_la1[29] = jj_gen;
+      jj_la1[28] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -786,7 +732,7 @@ public class MiniJava implements MiniJavaConstants {
       e1 = ExprVal15();
       break;
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[29] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -827,7 +773,7 @@ public class MiniJava implements MiniJavaConstants {
       e1 = ExprBase();
       break;
     default:
-      jj_la1[31] = jj_gen;
+      jj_la1[30] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -865,14 +811,14 @@ public class MiniJava implements MiniJavaConstants {
         l1 = CommaSeparatedExprList();
         break;
       default:
-        jj_la1[32] = jj_gen;
+        jj_la1[31] = jj_gen;
         ;
       }
       jj_consume_token(RPAREN);
       e1 = ExprVal16P(new Call(_e1, null, l1));
       break;
     default:
-      jj_la1[33] = jj_gen;
+      jj_la1[32] = jj_gen;
 
     }
       if (e1 != null){
@@ -886,15 +832,15 @@ public class MiniJava implements MiniJavaConstants {
  Exp a, b; ExpList e1;
     a = ExprVal2();
                     e1 = new ExpList(null, a);
-    label_4:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[34] = jj_gen;
-        break label_4;
+        jj_la1[33] = jj_gen;
+        break label_8;
       }
       jj_consume_token(COMMA);
       b = ExprVal2();
@@ -932,7 +878,7 @@ public class MiniJava implements MiniJavaConstants {
                 e1 = new False();{if (true) return e1;}
       break;
     default:
-      jj_la1[35] = jj_gen;
+      jj_la1[34] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -946,117 +892,389 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(0, xla); }
   }
 
-  static private boolean jj_3R_57() {
+  static private boolean jj_2_2(int xla) {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return !jj_3_2(); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(1, xla); }
+  }
+
+  static private boolean jj_3R_12() {
+    if (jj_3R_14()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_15()) jj_scanpos = xsp;
     return false;
   }
 
-  static private boolean jj_3R_22() {
-    if (jj_scan_token(LT)) return true;
+  static private boolean jj_3R_58() {
+    if (jj_scan_token(FALSE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_57() {
+    if (jj_scan_token(TRUE)) return true;
     return false;
   }
 
   static private boolean jj_3R_35() {
-    if (jj_scan_token(PERCENT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_17() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_22()) {
-    jj_scanpos = xsp;
-    if (jj_3R_23()) {
-    jj_scanpos = xsp;
-    if (jj_3R_24()) {
-    jj_scanpos = xsp;
-    if (jj_3R_25()) {
-    jj_scanpos = xsp;
-    if (jj_3R_26()) return true;
-    }
-    }
-    }
-    }
+    if (jj_scan_token(PLUS)) return true;
     return false;
   }
 
   static private boolean jj_3R_56() {
-    if (jj_scan_token(LPAREN)) return true;
+    if (jj_scan_token(NULL)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_27() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_35()) {
+    jj_scanpos = xsp;
+    if (jj_3R_36()) return true;
+    }
     return false;
   }
 
   static private boolean jj_3R_55() {
-    if (jj_scan_token(DOT)) return true;
+    if (jj_scan_token(CHARACTER)) return true;
     return false;
   }
 
-  static private boolean jj_3R_54() {
+  static private boolean jj_3R_13() {
     if (jj_scan_token(LBRACKET)) return true;
     return false;
   }
 
-  static private boolean jj_3R_53() {
+  static private boolean jj_3R_29() {
+    if (jj_scan_token(LE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_54() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_26() {
+    if (jj_3R_33()) return true;
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_3R_34()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_53() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_52() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_53()) {
+    jj_scanpos = xsp;
     if (jj_3R_54()) {
     jj_scanpos = xsp;
     if (jj_3R_55()) {
     jj_scanpos = xsp;
     if (jj_3R_56()) {
     jj_scanpos = xsp;
-    if (jj_3R_57()) return true;
+    if (jj_3R_57()) {
+    jj_scanpos = xsp;
+    if (jj_3R_58()) return true;
+    }
+    }
     }
     }
     }
     return false;
   }
 
-  static private boolean jj_3R_45() {
-    if (jj_3R_46()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_44() {
+  static private boolean jj_3R_9() {
     if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_3R_53()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_43() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_42() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_43()) {
+    if (jj_3R_11()) jj_scanpos = xsp;
+    if (jj_scan_token(ASSIGNMENT)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_25() {
+    if (jj_scan_token(NOT_EQUALS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_13()) jj_scanpos = xsp;
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_27()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_63() {
+    return false;
+  }
+
+  static private boolean jj_3R_28() {
+    if (jj_scan_token(LT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_41() {
+    if (jj_scan_token(PERCENT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_23() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_28()) {
     jj_scanpos = xsp;
-    if (jj_3R_44()) {
+    if (jj_3R_29()) {
     jj_scanpos = xsp;
-    if (jj_3R_45()) return true;
+    if (jj_3R_30()) {
+    jj_scanpos = xsp;
+    if (jj_3R_31()) {
+    jj_scanpos = xsp;
+    if (jj_3R_32()) return true;
+    }
+    }
     }
     }
     return false;
   }
 
-  static private boolean jj_3R_18() {
+  static private boolean jj_3R_62() {
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_9()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_61() {
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_60() {
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_59() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_3R_62()) {
+    jj_scanpos = xsp;
+    if (jj_3R_63()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_51() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_50() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_49() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_48() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_49()) {
+    jj_scanpos = xsp;
+    if (jj_3R_50()) {
+    jj_scanpos = xsp;
+    if (jj_3R_51()) return true;
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_24() {
     if (jj_scan_token(EQUALS)) return true;
     return false;
   }
 
-  static private boolean jj_3R_15() {
+  static private boolean jj_3R_21() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_18()) {
+    if (jj_3R_24()) {
     jj_scanpos = xsp;
-    if (jj_3R_19()) return true;
+    if (jj_3R_25()) return true;
     }
     return false;
   }
 
-  static private boolean jj_3R_26() {
+  static private boolean jj_3R_32() {
     if (jj_scan_token(INSTANCEOF)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_20() {
+    if (jj_3R_22()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_23()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_47() {
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_19() {
+    if (jj_scan_token(AND)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_46() {
+    if (jj_3R_47()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_40() {
+    if (jj_scan_token(FORWARD_SLASH)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_45() {
+    if (jj_scan_token(BOOL_NEG)) return true;
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_18() {
+    if (jj_3R_20()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_21()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_44() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_45()) {
+    jj_scanpos = xsp;
+    if (jj_3R_46()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_31() {
+    if (jj_scan_token(GE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3_2() {
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_38() {
+    if (jj_scan_token(EXPONENT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_17() {
+    if (jj_scan_token(OR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_43() {
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_42() {
+    if (jj_scan_token(NEW)) return true;
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_16() {
+    if (jj_3R_18()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_19()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_36() {
+    if (jj_scan_token(MINUS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_37() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_42()) {
+    jj_scanpos = xsp;
+    if (jj_3R_43()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(QUESTIONMARK)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_30() {
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_39() {
+    if (jj_scan_token(STAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_34() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_39()) {
+    jj_scanpos = xsp;
+    if (jj_3R_40()) {
+    jj_scanpos = xsp;
+    if (jj_3R_41()) return true;
+    }
+    }
     return false;
   }
 
@@ -1068,264 +1286,18 @@ public class MiniJava implements MiniJavaConstants {
     return false;
   }
 
-  static private boolean jj_3R_41() {
-    if (jj_3R_42()) return true;
-    return false;
-  }
-
-  static private boolean jj_3_1() {
-    if (jj_3R_5()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_13() {
-    if (jj_scan_token(AND)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_40() {
-    if (jj_3R_41()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_34() {
-    if (jj_scan_token(FORWARD_SLASH)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_39() {
-    if (jj_scan_token(BOOL_NEG)) return true;
-    if (jj_3R_42()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_12() {
-    if (jj_3R_14()) return true;
+  static private boolean jj_3R_33() {
+    if (jj_3R_37()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_15()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_38() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_39()) {
-    jj_scanpos = xsp;
-    if (jj_3R_40()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_25() {
-    if (jj_scan_token(GE)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_32() {
-    if (jj_scan_token(EXPONENT)) return true;
+    if (jj_3R_38()) jj_scanpos = xsp;
     return false;
   }
 
   static private boolean jj_3R_11() {
-    if (jj_scan_token(OR)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_37() {
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    if (jj_3R_12()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_13()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_36() {
-    if (jj_scan_token(NEW)) return true;
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_30() {
-    if (jj_scan_token(MINUS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_31() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_36()) {
-    jj_scanpos = xsp;
-    if (jj_3R_37()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_9() {
-    if (jj_scan_token(QUESTIONMARK)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_24() {
-    if (jj_scan_token(GT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_33() {
-    if (jj_scan_token(STAR)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_28() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_33()) {
-    jj_scanpos = xsp;
-    if (jj_3R_34()) {
-    jj_scanpos = xsp;
-    if (jj_3R_35()) return true;
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_8() {
-    if (jj_3R_10()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_11()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_27() {
-    if (jj_3R_31()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_32()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_6() {
     if (jj_scan_token(LBRACKET)) return true;
-    if (jj_3R_7()) return true;
+    if (jj_3R_12()) return true;
     if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_7() {
-    if (jj_3R_8()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_9()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_52() {
-    if (jj_scan_token(FALSE)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_51() {
-    if (jj_scan_token(TRUE)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_29() {
-    if (jj_scan_token(PLUS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_50() {
-    if (jj_scan_token(NULL)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_21() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_29()) {
-    jj_scanpos = xsp;
-    if (jj_3R_30()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_49() {
-    if (jj_scan_token(CHARACTER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_23() {
-    if (jj_scan_token(LE)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_48() {
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_20() {
-    if (jj_3R_27()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_28()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_47() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_46() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_47()) {
-    jj_scanpos = xsp;
-    if (jj_3R_48()) {
-    jj_scanpos = xsp;
-    if (jj_3R_49()) {
-    jj_scanpos = xsp;
-    if (jj_3R_50()) {
-    jj_scanpos = xsp;
-    if (jj_3R_51()) {
-    jj_scanpos = xsp;
-    if (jj_3R_52()) return true;
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_5() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_6()) jj_scanpos = xsp;
-    if (jj_scan_token(ASSIGNMENT)) return true;
-    if (jj_3R_7()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_19() {
-    if (jj_scan_token(NOT_EQUALS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_16() {
-    if (jj_3R_20()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_21()) jj_scanpos = xsp;
     return false;
   }
 
@@ -1344,7 +1316,7 @@ public class MiniJava implements MiniJavaConstants {
   static private boolean jj_lookingAhead = false;
   static private boolean jj_semLA;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[36];
+  static final private int[] jj_la1 = new int[35];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -1356,18 +1328,18 @@ public class MiniJava implements MiniJavaConstants {
       jj_la1_init_3();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x1e26400,0x1e26400,0x1a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
+      jj_la1_0 = new int[] {0x20,0x1e26400,0x1e26400,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x100,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x78000002,0x78000002,0x4218000,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x8000000,0x80000000,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
+      jj_la1_1 = new int[] {0x0,0x78000002,0x78000002,0x0,0x0,0x18000,0x40000,0x8000000,0x80000000,0x8000000,0x0,0x0,0x8000000,0x18000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x20000001,0x20000001,0x0,0x20000001,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x6000,0x0,0x0,0x4,0x4,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x1,0x20000001,0x40000005,0x0,0x0,};
+      jj_la1_2 = new int[] {0x0,0x20000001,0x20000001,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x6000,0x0,0x0,0x4,0x4,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x1,0x20000001,0x40000005,0x0,0x0,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  static final private JJCalls[] jj_2_rtns = new JJCalls[1];
+  static final private JJCalls[] jj_2_rtns = new JJCalls[2];
   static private boolean jj_rescan = false;
   static private int jj_gc = 0;
 
@@ -1389,7 +1361,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1404,7 +1376,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1422,7 +1394,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1433,7 +1405,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1450,7 +1422,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1460,7 +1432,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 36; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 35; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1580,7 +1552,7 @@ public class MiniJava implements MiniJavaConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 36; i++) {
+    for (int i = 0; i < 35; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1625,7 +1597,7 @@ public class MiniJava implements MiniJavaConstants {
 
   static private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 2; i++) {
     try {
       JJCalls p = jj_2_rtns[i];
       do {
@@ -1633,6 +1605,7 @@ public class MiniJava implements MiniJavaConstants {
           jj_la = p.arg; jj_lastpos = jj_scanpos = p.first;
           switch (i) {
             case 0: jj_3_1(); break;
+            case 1: jj_3_2(); break;
           }
         }
         p = p.next;

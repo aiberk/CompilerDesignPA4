@@ -1,16 +1,16 @@
 package syntaxtree;
 
 public class MethodDecl {
-    public Type t;
-    public Identifier i;
-    public FormalList f;
-    public VarDeclList v;
-    public StatementList s;
-    public Exp e;
+    public Identifier type;
+    public Identifier name;
+    public VarDeclList args;
+    public VarDeclList vars;
+    public StatementList statements;
+    public Exp returns;
 
-    public MethodDecl(Type t, Identifier i, FormalList f,
-                       VarDeclList v,StatementList s, Exp e){
-        this.t=t;this.i=i;this.f=f;this.v=v;this.s=s;this.e=e;
+    public MethodDecl(Identifier type, Identifier name, VarDeclList args,
+                       VarDeclList vars, StatementList statements, Exp returns){
+        this.type=type;this.name=name;this.args=args;this.vars=vars;this.statements=statements;this.returns=returns;
     }
 
     public Object accept(Visitor visitor, Object data) {

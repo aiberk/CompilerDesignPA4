@@ -84,8 +84,12 @@ public class SymbolTableVisitor implements Visitor {
     VarDeclList v=node.v;
     MethodDeclList m=node.m;
     node.i.accept(this, data);
-    node.v.accept(this, data);
-    node.m.accept(this, data);
+    if (node.v != null){
+        node.v.accept(this, data);
+    }
+    if (node.m != null){
+        node.m.accept(this, data);
+    }
 
     return data;
   } 

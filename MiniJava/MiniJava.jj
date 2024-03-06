@@ -19,7 +19,7 @@ public class MiniJava {
     FileReader fileReader = new FileReader("ast_test1.java");
  
     MiniJava parser = new MiniJava(fileReader);
-    StatementList s = parser.Program();
+    ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
 
@@ -136,13 +136,13 @@ TOKEN:
 
 /* Program Syntax */
 
-StatementList Program():
-{StatementList s1;}
+ClassDeclList Program():
+{ClassDeclList p = null; ClassDecl c;}
 {
 
-  s1 = StatementList()
-  <EOF>
-  {return s1;}
+  ((c = ClassDeclaration() {p = new ClassDeclList(c, p);})*
+  <EOF>)
+  {return p;}
 }
 StatementList StatementList():
 {StatementList s1 = null; Statement s = null;}
@@ -164,24 +164,10 @@ Statement Statement():
   |s = ExpStatement() <SEMICOLON>)
   {return s;}
 }
-void StatementBlock():
-{}
-{
-    ReturnStatement()
-    |ClassDeclaration()
-    |MethodDeclaration()
-    |CommentIgnore()
-    |ThrowStatement()
-}
 void CommentIgnore():
 {}
 {
     <COMMENT>
-}
-void ReturnStatement():
-{}
-{
-    <RETURN> {System.out.print("return ");} (ExprVal2())? <SEMICOLON> {System.out.print(";");}
 }
 Break Break():
 {}
@@ -211,27 +197,23 @@ If IfBlock():
     {return new If(e, if_block, elif_block, else_block);}
 }
 
-void MethodDeclaration():
-{Token t;}
+MethodDecl MethodDeclaration():
+{Token t, t1; Identifier type, name; VarDecl v; VarDeclList args = null; VarDeclList vars = null; StatementList statements = null; Exp returns = null;}
 {
-    (<PUBLIC> {System.out.print("public ");} 
-    | <PRIVATE> {System.out.print("private ");}
-    | <PROTECTED> {System.out.print("protected ");}) 
-    (<STATIC> {System.out.print("static ");})? 
-    (<VOID> {System.out.print("void ");} | t=<IDENTIFIER> {System.out.print(t.image+" ");} ) 
-    t=<IDENTIFIER> {System.out.print(t.image+" ");} <LPAREN> {System.out.print("(");} (CommaSeparatedSignatureList())? <RPAREN> {System.out.print(")");}
-    <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
+    ((<PUBLIC> 
+    | <PRIVATE>
+    | <PROTECTED>) 
+    (<STATIC>)? 
+    (<VOID> {type = new Identifier("void");} | t=<IDENTIFIER> {type = new Identifier(t.image);} ) 
+    t1=<IDENTIFIER> {name = new Identifier(t1.image);} <LPAREN> (v = TypeDeclaration() {args = new VarDeclList(v, args);} (<COMMA> v = TypeDeclaration() {args = new VarDeclList(v, args);})*)? <RPAREN> 
+    <LBRACE> 
+        (LOOKAHEAD(2) v = TypeDeclaration() <SEMICOLON> {vars = new VarDeclList(v, vars);})*
+        statements = StatementList()
+        (<RETURN> returns = ExprVal2() <SEMICOLON>)?
+     <RBRACE>)
+     {return new MethodDecl(type, name, args, vars, statements, returns);}
 }
-void CommaSeparatedSignatureList():
-{}
-{
-    DeclarationIdentifiers() (<COMMA>{System.out.print(",");} DeclarationIdentifiers())*
-}
-void DeclarationIdentifiers():
-{Token t;}
-{
-    t=<IDENTIFIER> {System.out.print(t.image+" ");} (<LBRACKET>{System.out.print("[");}<RBRACKET>{System.out.print("]");})? t=<IDENTIFIER>{System.out.print(t.image+" ");}
-}
+
 While WhileLoop():
 {Exp e; StatementList s;}
 {
@@ -249,26 +231,20 @@ void ForEach():
 {Token t;}
 {
 
-    <FOREACH> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} <COLON> {System.out.print(": ");} ExprVal2() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
+    <FOREACH> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} <COLON> {System.out.print(": ");} ExprVal2() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");}  <RBRACE> {System.out.print("}");}
 }
 
-void ClassDeclaration():
-{Token t;}
+ClassDecl ClassDeclaration():
+{Token t; VarDecl v; VarDeclList vl = null; MethodDecl m; MethodDeclList ml = null;}
 {
 
-    <CLASS> {System.out.print("class ");} t=<IDENTIFIER> {System.out.print(t.image+" ");} (<EXTENDS> {System.out.print("extends ");} ClassExtendsList())?
-    <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
-}
-void ClassExtendsList():
-{Token t;}
-{
-    t=<IDENTIFIER>{System.out.print(t.image+" ");} ClassExtendsListP()
-}
-void ClassExtendsListP():
-{Token t;}
-{
-    <COMMA> {System.out.print(", ");} t=<IDENTIFIER>{System.out.print(t.image+" ");} ClassExtendsListP()
-    |{}
+    (<CLASS> t=<IDENTIFIER>
+    <LBRACE> 
+      (v = TypeDeclaration() <SEMICOLON> {vl = new VarDeclList(v, vl);})* 
+      (m = MethodDeclaration() {ml = new MethodDeclList(m, ml);})*
+    <RBRACE>)
+    {return new ClassDecl(new Identifier(t.image), vl, ml);}
+
 }
 
 Statement ExpStatement():
@@ -281,7 +257,7 @@ Statement ExpStatement():
 VarDecl TypeDeclaration():
 {Token t1, t2; boolean is_array = false;}
 {
-  t1=<IDENTIFIER>(<LBRACKET><RBRACKET> {is_array = true;})? t2=<IDENTIFIER> <COMMA>
+  t1=<IDENTIFIER>(<LBRACKET><RBRACKET> {is_array = true;})? t2=<IDENTIFIER>
   {return new VarDecl(new Identifier(t1.image), new Identifier(t2.image), is_array);}
 }
 

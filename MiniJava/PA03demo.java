@@ -4,8 +4,6 @@ class PA03demo{
 
 
    }
-
-
 }
 class Demo{
    int num;
