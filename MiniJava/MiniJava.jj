@@ -147,7 +147,7 @@ StatementList Program():
 StatementList StatementList():
 {StatementList s1 = null; Statement s = null;}
 {
-  (s=Statement() <SEMICOLON> {s1 = new StatementList(s, s1);})*
+  (s=Statement() {s1 = new StatementList(s, s1);})*
   {return s1;}
 }
 
@@ -155,8 +155,9 @@ Statement Statement():
 {Statement s;}
 {
   (LOOKAHEAD(4)
-  s = Assignment()
-  |s = ExpStatement())
+  s = Assignment() <SEMICOLON>
+  |s = IfBlock()
+  |s = ExpStatement() <SEMICOLON>)
   {return s;}
 }
 void StatementBlock():
@@ -199,17 +200,15 @@ void ThrowStatement():
 {
     <THROW>{System.out.print("throw ");} ExprVal2() <SEMICOLON> {System.out.print(";");}
 }
-void IfBlock():
-{}
+If IfBlock():
+{Exp e, e1; StatementList s1; StatementList if_block; ElseIf elif_block = null; StatementList else_block = null;}
 {
-    <IF> {System.out.print("if ");} <LPAREN> {System.out.print("( ");} ExprVal2() <RPAREN> {System.out.print(") ");}
-    <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
-    (<ELSEIF> {System.out.print("else if ");} <LPAREN> {System.out.print("( ");} ExprVal2() <RPAREN> {System.out.print(") ");}
-    <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");})*
-    (<ELSE> {System.out.print("else ");}
-    <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");})?
-
-
+    (<IF> <LPAREN> e = ExprVal2() <RPAREN>
+    <LBRACE> if_block = StatementList() <RBRACE>
+    (<ELSEIF> <LPAREN> e1 = ExprVal2() <RPAREN>
+    <LBRACE> s1 = StatementList() <RBRACE> {elif_block = new ElseIf(elif_block, e1, s1);})*
+    (<ELSE> <LBRACE> else_block = StatementList() <RBRACE>)?)
+    {return new If(e, if_block, elif_block, else_block);}
 }
 
 void MethodDeclaration():

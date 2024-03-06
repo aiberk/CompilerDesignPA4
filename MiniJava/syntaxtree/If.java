@@ -2,11 +2,15 @@ package syntaxtree;
 
 public class If extends Statement{
     public Exp e;
-    public Statement s1;
-    public Statement s2;
+    public StatementList if_block;
+    public ElseIf elif_block;
+    public StatementList else_block;
     
-    public If(Exp e,Statement s1,Statement s2){
-        this.e=e; this.s1=s1; this.s2=s2;
+    public If(Exp e, StatementList if_block, ElseIf elif_block, StatementList else_block){
+        this.e=e;
+        this.if_block = if_block;
+        this.elif_block = elif_block;
+        this.else_block = else_block;
     }
 
     public Object accept(Visitor visitor, Object data) {

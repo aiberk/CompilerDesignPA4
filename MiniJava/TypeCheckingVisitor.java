@@ -231,15 +231,31 @@ public class TypeCheckingVisitor implements Visitor {
 
     public Object visit(If node, Object data){ 
         Exp e=node.e;
-        Statement s1=node.s1;
-        Statement s2=node.s2;
         node.e.accept(this, data);
-        node.s1.accept(this, data);
-        node.s2.accept(this, data);
+        if (node.if_block != null){
+            node.if_block.accept(this,data);
+        }
+        if (node.elif_block != null){
+             node.elif_block.accept(this,data);
+        }
+        if (node.else_block != null){
+             node.else_block.accept(this,data);
+        }
 
         return "*void"; 
     }
+    public Object visit(ElseIf node, Object data){
+        
+        node.e.accept(this,data);
+        if (node.block != null){
+            node.block.accept(this,data);
+        }
+        if (node.n != null){
+             node.n.accept(this,data);
+        }
 
+        return data;
+    }
     public Object visit(IntArrayType node, Object data){
         return "int[]"; 
     }

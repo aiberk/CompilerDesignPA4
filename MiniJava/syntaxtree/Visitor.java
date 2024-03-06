@@ -61,4 +61,5 @@ public interface Visitor {
   public Object visit(Break node, Object data);
   public Object visit(Attribute node, Object data);
   public Object visit(ExpStatement node, Object data);
+  public Object visit(ElseIf node, Object data);
 }

@@ -128,8 +128,28 @@ import syntaxtree.*;
         System.out.println(indentString() + getClassName(node));
         ++indent;
         node.e.accept(this,data);
-        node.s1.accept(this,data);
-        node.s2.accept(this,data);
+        if (node.if_block != null){
+             node.if_block.accept(this,data);
+        }
+        if (node.elif_block != null){
+             node.elif_block.accept(this,data);
+        }
+        if (node.else_block != null){
+             node.else_block.accept(this,data);
+        }
+        --indent;
+        return data;
+   }
+   public Object visit(ElseIf node, Object data){
+        System.out.println(indentString() + getClassName(node));
+        ++indent;
+        node.e.accept(this,data);
+        if (node.block != null){
+             node.block.accept(this,data);
+        }
+        if (node.n != null){
+             node.n.accept(this,data);
+        }
         --indent;
         return data;
    }
