@@ -294,9 +294,11 @@ import syntaxtree.*;
         return v;
    }
    public Object visit(Throw node, Object data){ 
+        //throw node.e
         return null;
     }
-    public Object visit(StringExp node, Object data){ 
+    public Object visit(StringExp node, Object data){
+        //"node.s" 
         return null;
     }
     public Object visit(Return node, Object data){ 
@@ -327,12 +329,12 @@ import syntaxtree.*;
     }
 
     public Object visit(InstanceOf node, Object data){ 
-        //a istanceof b
+        //node.e1 istanceof node.e2
         return null;
     }
 
     public Object visit(Inline node, Object data){ 
-        //conditional ? if_true : if_false
+        //node.conditional ? node.if_true : node.if_false
         return null;
     }
     

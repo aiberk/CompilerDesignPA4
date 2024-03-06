@@ -19,7 +19,7 @@ public class MiniJava {
     FileReader fileReader = new FileReader("ast_test1.java");
  
     MiniJava parser = new MiniJava(fileReader);
-    Statement s = parser.Program();
+    StatementList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
 
@@ -136,14 +136,26 @@ TOKEN:
 
 /* Program Syntax */
 
-Statement Program():
-{Statement s1;}
+StatementList Program():
+{StatementList s1;}
 {
 
-  /*StatementBlock()*/
-  s1 = Assignment()
+  s1 = StatementList()
   <EOF>
   {return s1;}
+}
+StatementList StatementList():
+{StatementList s1 = null; Statement s = null;}
+{
+  (s=Statement() <SEMICOLON> {s1 = new StatementList(s, s1);})*
+  {return s1;}
+}
+
+Statement Statement():
+{Statement s;}
+{
+  s = Assignment()
+  {return s;}
 }
 void StatementBlock():
 {}

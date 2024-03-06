@@ -9,19 +9,45 @@ public class MiniJava implements MiniJavaConstants {
     FileReader fileReader = new FileReader("ast_test1.java");
 
     MiniJava parser = new MiniJava(fileReader);
-    Statement s = parser.Program();
+    StatementList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
 
   }
 
 /* Program Syntax */
-  static final public Statement Program() throws ParseException {
- Statement s1;
-    /*StatementBlock()*/
-      s1 = Assignment();
+  static final public StatementList Program() throws ParseException {
+ StatementList s1;
+    s1 = StatementList();
     jj_consume_token(0);
    {if (true) return s1;}
+    throw new Error("Missing return statement in function");
+  }
+
+  static final public StatementList StatementList() throws ParseException {
+ StatementList s1 = null; Statement s = null;
+    label_1:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+      case IDENTIFIER:
+        ;
+        break;
+      default:
+        jj_la1[0] = jj_gen;
+        break label_1;
+      }
+      s = Statement();
+      jj_consume_token(SEMICOLON);
+                              s1 = new StatementList(s, s1);
+    }
+   {if (true) return s1;}
+    throw new Error("Missing return statement in function");
+  }
+
+  static final public Statement Statement() throws ParseException {
+ Statement s;
+    s = Assignment();
+   {if (true) return s;}
     throw new Error("Missing return statement in function");
   }
 
@@ -63,7 +89,7 @@ public class MiniJava implements MiniJavaConstants {
       IfBlock();
       break;
     default:
-      jj_la1[0] = jj_gen;
+      jj_la1[1] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -90,7 +116,7 @@ public class MiniJava implements MiniJavaConstants {
       ExprVal2();
       break;
     default:
-      jj_la1[1] = jj_gen;
+      jj_la1[2] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -132,15 +158,15 @@ public class MiniJava implements MiniJavaConstants {
     StatementBlock();
     jj_consume_token(RBRACE);
                                                                  System.out.print("}");
-    label_1:
+    label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ELSEIF:
         ;
         break;
       default:
-        jj_la1[2] = jj_gen;
-        break label_1;
+        jj_la1[3] = jj_gen;
+        break label_2;
       }
       jj_consume_token(ELSEIF);
                System.out.print("else if ");
@@ -166,7 +192,7 @@ public class MiniJava implements MiniJavaConstants {
                                                                  System.out.print("}");
       break;
     default:
-      jj_la1[3] = jj_gen;
+      jj_la1[4] = jj_gen;
       ;
     }
   }
@@ -187,7 +213,7 @@ public class MiniJava implements MiniJavaConstants {
                    System.out.print("protected ");
       break;
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[5] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -197,7 +223,7 @@ public class MiniJava implements MiniJavaConstants {
                System.out.print("static ");
       break;
     default:
-      jj_la1[5] = jj_gen;
+      jj_la1[6] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -210,7 +236,7 @@ public class MiniJava implements MiniJavaConstants {
                                                            System.out.print(t.image+" ");
       break;
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[7] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -223,7 +249,7 @@ public class MiniJava implements MiniJavaConstants {
       CommaSeparatedSignatureList();
       break;
     default:
-      jj_la1[7] = jj_gen;
+      jj_la1[8] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -237,15 +263,15 @@ public class MiniJava implements MiniJavaConstants {
 
   static final public void CommaSeparatedSignatureList() throws ParseException {
     DeclarationIdentifiers();
-    label_2:
+    label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[8] = jj_gen;
-        break label_2;
+        jj_la1[9] = jj_gen;
+        break label_3;
       }
       jj_consume_token(COMMA);
                                       System.out.print(",");
@@ -265,7 +291,7 @@ public class MiniJava implements MiniJavaConstants {
                                                                                                   System.out.print("]");
       break;
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[10] = jj_gen;
       ;
     }
     t = jj_consume_token(IDENTIFIER);
@@ -343,7 +369,7 @@ public class MiniJava implements MiniJavaConstants {
       ClassExtendsList();
       break;
     default:
-      jj_la1[10] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
     jj_consume_token(LBRACE);
@@ -371,7 +397,7 @@ public class MiniJava implements MiniJavaConstants {
       ClassExtendsListP();
       break;
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[12] = jj_gen;
 
     }
   }
@@ -386,7 +412,7 @@ public class MiniJava implements MiniJavaConstants {
                                         is_array = true;
       break;
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[13] = jj_gen;
       ;
     }
     t2 = jj_consume_token(IDENTIFIER);
@@ -405,7 +431,7 @@ public class MiniJava implements MiniJavaConstants {
       jj_consume_token(RBRACKET);
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[14] = jj_gen;
       ;
     }
     jj_consume_token(ASSIGNMENT);
@@ -428,7 +454,7 @@ public class MiniJava implements MiniJavaConstants {
       if_false = ExprVal2();
       break;
     default:
-      jj_la1[14] = jj_gen;
+      jj_la1[15] = jj_gen;
       ;
     }
       if (if_true != null){
@@ -447,7 +473,7 @@ public class MiniJava implements MiniJavaConstants {
       e2 = ExprVal3();
       break;
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -466,7 +492,7 @@ public class MiniJava implements MiniJavaConstants {
       e2 = ExprVal4();
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -492,14 +518,14 @@ public class MiniJava implements MiniJavaConstants {
                                                                 not_equals = true;
         break;
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[18] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal8();
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[19] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -543,14 +569,14 @@ public class MiniJava implements MiniJavaConstants {
                                                                                                                    instf = true;
         break;
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[20] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal9();
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -588,14 +614,14 @@ public class MiniJava implements MiniJavaConstants {
                                                          minus = true;
         break;
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[22] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal11();
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[23] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -629,14 +655,14 @@ public class MiniJava implements MiniJavaConstants {
                                                                                            mod = true;
         break;
       default:
-        jj_la1[23] = jj_gen;
+        jj_la1[24] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       e2 = ExprVal12();
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[25] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -661,7 +687,7 @@ public class MiniJava implements MiniJavaConstants {
       e2 = ExprVal13__();
       break;
     default:
-      jj_la1[25] = jj_gen;
+      jj_la1[26] = jj_gen;
       ;
     }
       if (e2 != null){
@@ -690,7 +716,7 @@ public class MiniJava implements MiniJavaConstants {
       e1 = ExprVal14();
       break;
     default:
-      jj_la1[26] = jj_gen;
+      jj_la1[27] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -719,7 +745,7 @@ public class MiniJava implements MiniJavaConstants {
       e1 = ExprVal15();
       break;
     default:
-      jj_la1[27] = jj_gen;
+      jj_la1[28] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -760,7 +786,7 @@ public class MiniJava implements MiniJavaConstants {
       e1 = ExprBase();
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[29] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -798,14 +824,14 @@ public class MiniJava implements MiniJavaConstants {
         l1 = CommaSeparatedExprList();
         break;
       default:
-        jj_la1[29] = jj_gen;
+        jj_la1[30] = jj_gen;
         ;
       }
       jj_consume_token(RPAREN);
       e1 = ExprVal16P(new Call(_e1, null, l1));
       break;
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[31] = jj_gen;
 
     }
       if (e1 != null){
@@ -819,15 +845,15 @@ public class MiniJava implements MiniJavaConstants {
  Exp a, b; ExpList e1;
     a = ExprVal2();
                     e1 = new ExpList(null, a);
-    label_3:
+    label_4:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case COMMA:
         ;
         break;
       default:
-        jj_la1[31] = jj_gen;
-        break label_3;
+        jj_la1[32] = jj_gen;
+        break label_4;
       }
       jj_consume_token(COMMA);
       b = ExprVal2();
@@ -865,7 +891,7 @@ public class MiniJava implements MiniJavaConstants {
                 e1 = new False();{if (true) return e1;}
       break;
     default:
-      jj_la1[32] = jj_gen;
+      jj_la1[33] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -882,7 +908,7 @@ public class MiniJava implements MiniJavaConstants {
   static public Token jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[33];
+  static final private int[] jj_la1 = new int[34];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -894,16 +920,16 @@ public class MiniJava implements MiniJavaConstants {
       jj_la1_init_3();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x365a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
+      jj_la1_0 = new int[] {0x0,0x365a0,0x1e00000,0x800,0x1000,0x80,0x0,0x200,0x0,0x0,0x0,0x40,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4000000,0x4000000,0x0,0x0,0x0,0x0,0x0,0x1e00000,0x1c00000,0x1c00000,0x1e00000,0x0,0x0,0x1c00000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x4218002,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x8000000,0x80000000,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
+      jj_la1_1 = new int[] {0x8000000,0x4218002,0x78000000,0x0,0x0,0x18000,0x40000,0x8000000,0x8000000,0x80000000,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x78000000,0x78000000,0x78000000,0x78000000,0x0,0x80000000,0x70000000,};
    }
    private static void jj_la1_init_2() {
-      jj_la1_2 = new int[] {0x0,0x20000001,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x4,0x4,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x1,0x20000001,0x40000005,0x0,0x0,};
+      jj_la1_2 = new int[] {0x0,0x0,0x20000001,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x4,0x4,0x80000000,0x8000,0x10000,0x60000,0x60000,0x780000,0x780000,0x1800000,0x1800000,0x1c000000,0x1c000000,0x2000000,0x20000001,0x20000001,0x1,0x20000001,0x40000005,0x0,0x0,};
    }
    private static void jj_la1_init_3() {
-      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
 
   /** Constructor with InputStream. */
@@ -924,7 +950,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -938,7 +964,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -955,7 +981,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -965,7 +991,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -981,7 +1007,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -990,7 +1016,7 @@ public class MiniJava implements MiniJavaConstants {
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 33; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 34; i++) jj_la1[i] = -1;
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -1046,7 +1072,7 @@ public class MiniJava implements MiniJavaConstants {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < 34; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
