@@ -397,6 +397,28 @@ public class SymbolTableVisitor implements Visitor {
     return data; 
   }
 
+  public Object visit(InPlaceOp node, Object data){ 
+    //node.i++ or node.i--
+    //use node.is_increment to decide between the above
+    node.i.accept(this, data);
+    return data; 
+  }
+  public Object visit(For node, Object data){ 
+        /*
+        for (node.type node.i = node.e; node.e1; node.op){
+             node.for_block
+        }
+        */
+        node.type.accept(this, data);
+        node.i.accept(this, data);
+        node.e.accept(this, data);
+        node.e1.accept(this, data);
+        node.op.accept(this, data);
+        if (node.for_block != null){
+             node.for_block.accept(this, data);
+        }
+        return data; 
+    }
 }
 
 

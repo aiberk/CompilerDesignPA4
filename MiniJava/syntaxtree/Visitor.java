@@ -62,4 +62,6 @@ public interface Visitor {
   public Object visit(Attribute node, Object data);
   public Object visit(ExpStatement node, Object data);
   public Object visit(ElseIf node, Object data);
+  public Object visit(InPlaceOp node, Object data);
+  public Object visit(For node, Object data);
 }

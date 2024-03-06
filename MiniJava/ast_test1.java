@@ -8,7 +8,7 @@ if (k[h.j]*2 == 1){
     }
 }
 else if (false){
-
+    k = new V(a, b, c);
 }
 else if (true){
     print("HI!!");
@@ -18,4 +18,7 @@ else if (true){
 }
 else{
     k[10] = null;
+}
+for (int i = f(); i > k(); i--){
+    System.out.println(i);
 }

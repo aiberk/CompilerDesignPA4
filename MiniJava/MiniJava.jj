@@ -158,6 +158,7 @@ Statement Statement():
   s = Assignment() <SEMICOLON>
   |s = IfBlock()
   |s = WhileLoop()
+  |s = For()
   |s = Continue() <SEMICOLON>
   |s = Break() <SEMICOLON>
   |s = ExpStatement() <SEMICOLON>)
@@ -169,12 +170,8 @@ void StatementBlock():
     ReturnStatement()
     |ClassDeclaration()
     |MethodDeclaration()
-    |WhileLoop()
-    |ForLoop()
     |CommentIgnore()
-    |ForEachLoop()
     |ThrowStatement()
-    |IfBlock()
 }
 void CommentIgnore():
 {}
@@ -242,12 +239,13 @@ While WhileLoop():
     <LBRACE> s = StatementList() <RBRACE>
     {return new While(e, s);}
 }
-void ForLoop():
-{}
+For For():
+{Token t, t1, t2; Exp e, e1; boolean is_increment = false; StatementList s;}
 {
-    <FOR> {System.out.print("for ");} <LPAREN> {System.out.print("( ");} ExprVal2() <SEMICOLON> {System.out.print("; ");} ExprVal2() <SEMICOLON> {System.out.print("; ");} ExprVal2() <RPAREN> {System.out.print(") ");} <LBRACE> {System.out.print("{");} StatementBlock() <RBRACE> {System.out.print("}");}
+    <FOR> <LPAREN> t=<IDENTIFIER> t1=<IDENTIFIER> <ASSIGNMENT> e = ExprVal2() <SEMICOLON> e1 = ExprVal2() <SEMICOLON> t2=<IDENTIFIER> (<INCREMENT> {is_increment = true;} | <DECREMENT>) <RPAREN> <LBRACE> s = StatementList() <RBRACE>
+    {return new For(new IdentifierExp(t.image), new IdentifierExp(t1.image), e, e1, new InPlaceOp(new IdentifierExp(t2.image), is_increment), s);}
 }
-void ForEachLoop():
+void ForEach():
 {Token t;}
 {
 
