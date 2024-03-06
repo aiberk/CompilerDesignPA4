@@ -479,5 +479,9 @@ public class DefaultVisitor implements Visitor {
         return data; 
     }
 
+    public Object visit(ExpStatement node, Object data){ 
+        node.e.accept(this, data);
+        return data; 
+    }
 }
 

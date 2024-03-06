@@ -504,6 +504,11 @@ import syntaxtree.*;
         node.i.accept(this, data);
         return data; 
     }
+    public Object visit(ExpStatement node, Object data){ 
+         System.out.println(indentString() + getClassName(node));
+        node.e.accept(this, data);
+        return data; 
+    }
 }
 
  

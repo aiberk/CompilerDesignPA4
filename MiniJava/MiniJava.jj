@@ -154,7 +154,9 @@ StatementList StatementList():
 Statement Statement():
 {Statement s;}
 {
+  (LOOKAHEAD(4)
   s = Assignment()
+  |s = ExpStatement())
   {return s;}
 }
 void StatementBlock():
@@ -266,6 +268,13 @@ void ClassExtendsListP():
 {
     <COMMA> {System.out.print(", ");} t=<IDENTIFIER>{System.out.print(t.image+" ");} ClassExtendsListP()
     |{}
+}
+
+Statement ExpStatement():
+{Exp e;}
+{
+  e = ExprVal2()
+  {return new ExpStatement(e);}
 }
 
 VarDecl TypeDeclaration():
