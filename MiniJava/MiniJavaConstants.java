@@ -77,121 +77,119 @@ public interface MiniJavaConstants {
   /** RegularExpression Id. */
   int FINALLY = 38;
   /** RegularExpression Id. */
-  int FLOAT = 39;
+  int GOTO = 39;
   /** RegularExpression Id. */
-  int GOTO = 40;
+  int IMPLEMENTS = 40;
   /** RegularExpression Id. */
-  int IMPLEMENTS = 41;
+  int IMPORT = 41;
   /** RegularExpression Id. */
-  int IMPORT = 42;
+  int INTERFACE = 42;
   /** RegularExpression Id. */
-  int INTERFACE = 43;
+  int LONG = 43;
   /** RegularExpression Id. */
-  int LONG = 44;
+  int NATIVE = 44;
   /** RegularExpression Id. */
-  int NATIVE = 45;
+  int PACKAGE = 45;
   /** RegularExpression Id. */
-  int PACKAGE = 46;
+  int PRIVATE = 46;
   /** RegularExpression Id. */
-  int PRIVATE = 47;
+  int PROTECTED = 47;
   /** RegularExpression Id. */
-  int PROTECTED = 48;
+  int SHORT = 48;
   /** RegularExpression Id. */
-  int SHORT = 49;
+  int STATIC = 49;
   /** RegularExpression Id. */
-  int STATIC = 50;
+  int STRICTFP = 50;
   /** RegularExpression Id. */
-  int STRICTFP = 51;
+  int SYNCHRONIZED = 51;
   /** RegularExpression Id. */
-  int SYNCHRONIZED = 52;
+  int THROW = 52;
   /** RegularExpression Id. */
-  int THROW = 53;
+  int THROWS = 53;
   /** RegularExpression Id. */
-  int THROWS = 54;
+  int TRANSIENT = 54;
   /** RegularExpression Id. */
-  int TRANSIENT = 55;
+  int TRY = 55;
   /** RegularExpression Id. */
-  int TRY = 56;
+  int VOLATILE = 56;
   /** RegularExpression Id. */
-  int VOLATILE = 57;
+  int COMMENT = 57;
   /** RegularExpression Id. */
-  int COMMENT = 58;
+  int IDENTIFIER = 58;
   /** RegularExpression Id. */
-  int IDENTIFIER = 59;
+  int INTEGER = 59;
   /** RegularExpression Id. */
-  int INTEGER = 60;
+  int CHARACTER = 60;
   /** RegularExpression Id. */
-  int CHARACTER = 61;
+  int STRING = 61;
   /** RegularExpression Id. */
-  int STRING = 62;
+  int COMMA = 62;
   /** RegularExpression Id. */
-  int COMMA = 63;
+  int LPAREN = 63;
   /** RegularExpression Id. */
-  int LPAREN = 64;
+  int RPAREN = 64;
   /** RegularExpression Id. */
-  int RPAREN = 65;
+  int LBRACKET = 65;
   /** RegularExpression Id. */
-  int LBRACKET = 66;
+  int RBRACKET = 66;
   /** RegularExpression Id. */
-  int RBRACKET = 67;
+  int LBRACE = 67;
   /** RegularExpression Id. */
-  int LBRACE = 68;
+  int RBRACE = 68;
   /** RegularExpression Id. */
-  int RBRACE = 69;
+  int COLON = 69;
   /** RegularExpression Id. */
-  int COLON = 70;
+  int PLUS_EQUALS = 70;
   /** RegularExpression Id. */
-  int PLUS_EQUALS = 71;
+  int MINUS_EQUALS = 71;
   /** RegularExpression Id. */
-  int MINUS_EQUALS = 72;
+  int STAR_EQUALS = 72;
   /** RegularExpression Id. */
-  int STAR_EQUALS = 73;
+  int FORWARD_SLASH_EQUALS = 73;
   /** RegularExpression Id. */
-  int FORWARD_SLASH_EQUALS = 74;
+  int PERCENT_EQUALS = 74;
   /** RegularExpression Id. */
-  int PERCENT_EQUALS = 75;
+  int ASSIGNMENT = 75;
   /** RegularExpression Id. */
-  int ASSIGNMENT = 76;
+  int INCREMENT = 76;
   /** RegularExpression Id. */
-  int INCREMENT = 77;
+  int DECREMENT = 77;
   /** RegularExpression Id. */
-  int DECREMENT = 78;
+  int OR = 78;
   /** RegularExpression Id. */
-  int OR = 79;
+  int AND = 79;
   /** RegularExpression Id. */
-  int AND = 80;
+  int NOT_EQUALS = 80;
   /** RegularExpression Id. */
-  int NOT_EQUALS = 81;
+  int EQUALS = 81;
   /** RegularExpression Id. */
-  int EQUALS = 82;
+  int LE = 82;
   /** RegularExpression Id. */
-  int LE = 83;
+  int GE = 83;
   /** RegularExpression Id. */
-  int GE = 84;
+  int LT = 84;
   /** RegularExpression Id. */
-  int LT = 85;
+  int GT = 85;
   /** RegularExpression Id. */
-  int GT = 86;
+  int PLUS = 86;
   /** RegularExpression Id. */
-  int PLUS = 87;
+  int MINUS = 87;
   /** RegularExpression Id. */
-  int MINUS = 88;
+  int EXPONENT = 88;
   /** RegularExpression Id. */
-  int EXPONENT = 89;
+  int STAR = 89;
   /** RegularExpression Id. */
-  int STAR = 90;
+  int FORWARD_SLASH = 90;
   /** RegularExpression Id. */
-  int FORWARD_SLASH = 91;
+  int PERCENT = 91;
   /** RegularExpression Id. */
-  int PERCENT = 92;
+  int BOOL_NEG = 92;
   /** RegularExpression Id. */
-  int BOOL_NEG = 93;
+  int DOT = 93;
   /** RegularExpression Id. */
-  int DOT = 94;
+  int QUESTIONMARK = 94;
   /** RegularExpression Id. */
-  int QUESTIONMARK = 95;
-  /** RegularExpression Id. */
-  int SEMICOLON = 96;
+  int SEMICOLON = 95;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -237,7 +235,6 @@ public interface MiniJavaConstants {
     "\"enum\"",
     "\"final\"",
     "\"finally\"",
-    "\"float\"",
     "\"goto\"",
     "\"implements\"",
     "\"import\"",

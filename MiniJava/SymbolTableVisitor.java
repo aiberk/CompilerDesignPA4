@@ -18,6 +18,10 @@ public class SymbolTableVisitor implements Visitor {
 
   public SymbolTable symbolTable = new SymbolTable();
 
+  public static String format_type(String tname, boolean is_array){
+    return tname + (is_array ? "[]" : "");
+  }
+
   public Object visit(And node, Object data){ 
     Exp e1=node.e1;
     Exp e2=node.e2;
@@ -51,8 +55,6 @@ public class SymbolTableVisitor implements Visitor {
   } 
 
   public Object visit(Assign node, Object data){ 
-    Identifier i=node.i;
-    Exp e=node.e;
     node.i.accept(this, data);
     node.e.accept(this, data);
     return data; 
@@ -80,25 +82,24 @@ public class SymbolTableVisitor implements Visitor {
   } 
   
   public Object visit(ClassDecl node, Object data){ 
-    Identifier i = node.i;
-    VarDeclList v=node.v;
-    MethodDeclList m=node.m;
-    node.i.accept(this, data);
+    String dt = (String) data + ((( String)data).length() == 0 ? node.i.s : "$" + node.i.s);
+
+    node.i.accept(this, dt);
     if (node.v != null){
-        node.v.accept(this, data);
+        node.v.accept(this, dt);
     }
     if (node.m != null){
-        node.m.accept(this, data);
+        node.m.accept(this, dt);
     }
 
     return data;
   } 
   
   public Object visit(ClassDeclList node, Object data){ 
-    ClassDecl c=node.c;
-    ClassDeclList clist=node.clist;
     node.c.accept(this, data);
-    node.clist.accept(this, data);
+    if (node.clist != null){
+      node.clist.accept(this, data);
+    }
 
     return data;
   } 
@@ -124,27 +125,21 @@ public class SymbolTableVisitor implements Visitor {
 } 
 
     public Object visit(Formal node, Object data){ 
-        Identifier i=node.i;
-        Type t=node.t;
-        node.i.accept(this, data);
-        node.t.accept(this, data);
-        symbolTable.formals.put(data + "$" + i.s, node);
-        symbolTable.typeName.put(data + "$" + i.s, getTypeName(t));
-
-
-        return data; 
+        String dt = (String) data + ((( String)data).length() == 0 ? node.i.s : "$" + node.i.s);
+        node.t.accept(this, dt);
+        node.i.accept(this, dt);
+        symbolTable.signatures.put(dt, node);
+        symbolTable.typeName.put(dt, this.format_type(node.t.s, node.is_array));
+        return data;
     }
 
     public Object visit(FormalList node, Object data){ 
-        Formal f=node.f;
-        FormalList flist=node.flist;
         node.f.accept(this, data);
         if (node.flist != null) {
-            node.flist.accept(this, data);
+          node.flist.accept(this, data);
         }
 
-
-        return data; 
+        return data;
     }
 
     public Object visit(Identifier node, Object data){ 
@@ -216,8 +211,6 @@ public class SymbolTableVisitor implements Visitor {
     }
 
     public Object visit(MainClass node, Object data){ 
-        Identifier i=node.i;
-        Statement s=node.s;
         node.i.accept(this, data);
         node.s.accept(this, data);
 
@@ -225,23 +218,21 @@ public class SymbolTableVisitor implements Visitor {
     }
 
     public Object visit(MethodDecl node, Object data){ 
-        Type t=node.t;
-        Identifier i=node.i;
-        FormalList f=node.f;
-        VarDeclList v=node.v;
-        StatementList s=node.s;
-        Exp e=node.e;
-        String data2 = data + "$" + i.s;
-        //node.t.accept(this, data2);
-        //node.i.accept(this, data2);
-        node.f.accept(this, data2);
-        if (node.v != null) {
-            node.v.accept(this, data2);
+        String dt = (String) data + ((( String)data).length() == 0 ? node.name.s : "$" + node.name.s);
+        if (node.args != null){
+          node.args.accept(this, dt);
         }
-        //node.s.accept(this, data2);
-        //node.e.accept(this, data2);
-
-        symbolTable.methods.put(data + "$" + i.s, node);
+        if (node.vars != null){
+          node.vars.accept(this, dt);
+        }
+        if (node.statements != null){
+          node.statements.accept(this, dt);
+        }
+        if (node.returns != null){
+          node.returns.accept(this, dt);
+        }
+        symbolTable.typeName.put(dt, this.format_type(node.type.s, node.is_array));
+        symbolTable.methods.put(dt, node);
         return data; 
     }
 
@@ -276,7 +267,6 @@ public class SymbolTableVisitor implements Visitor {
 
 
     public Object visit(NewObject node, Object data){ 
-        Identifier i=node.i;
         node.i.accept(this, data);
 
         return data; 
@@ -368,20 +358,17 @@ public class SymbolTableVisitor implements Visitor {
     }
 
     public Object visit(VarDecl node, Object data){ 
-        Type t=node.t;
-        Identifier i=node.i;
-        node.t.accept(this, data);
-        node.i.accept(this, data);
-        symbolTable.variables.put(data + "$" + i.s, node);
-        symbolTable.typeName.put(data + "$" + i.s, getTypeName(t));
-
+        String dt = (String) data + ((( String)data).length() == 0 ? node.i.s : "$" + node.i.s);
+        node.t.accept(this, dt);
+        node.i.accept(this, dt);
+        symbolTable.variables.put(dt, node);
+        symbolTable.typeName.put(dt, this.format_type(node.t.s, node.is_array));
         return data;
     }
 
 
+
   public Object visit(VarDeclList node, Object data){ 
-    VarDecl v=node.v;
-    VarDeclList vlist=node.vlist;
     node.v.accept(this, data);
     if (node.vlist != null) {
       node.vlist.accept(this, data);
@@ -407,6 +394,16 @@ public class SymbolTableVisitor implements Visitor {
     node.i.accept(this, data);
     return data; 
   }
+  public Object visit(ExpStatement node, Object data){ 
+      node.e.accept(this, data);
+      return data; 
+  }
+  public Object visit(Attribute node, Object data){ 
+      node.e.accept(this, data);
+      node.i.accept(this, data);
+      return data; 
+  }
+
   public Object visit(For node, Object data){ 
         /*
         for (node.type node.i = node.e; node.e1; node.op){
@@ -421,6 +418,106 @@ public class SymbolTableVisitor implements Visitor {
         if (node.for_block != null){
              node.for_block.accept(this, data);
         }
+        return data; 
+    }
+    public Object visit(Continue node, Object data){
+        //continue statement
+        return data; 
+    }
+
+    public Object visit(CharacterExp node, Object data){ 
+        return data; 
+    }
+
+    public Object visit(Break node, Object data){
+        //break statement
+        return data; 
+    }
+    public Object visit(Divide node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+    public Object visit(Modulo node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(LessThanOrEqual node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(InstanceOf node, Object data){ 
+        //a istanceof b
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Inline node, Object data){ 
+        //conditional ? if_true : if_false
+        node.conditional.accept(this, data);
+        node.if_true.accept(this, data);
+        node.if_false.accept(this, data);
+        return data; 
+    }
+    
+    public Object visit(GreaterThanOrEqual node, Object data){
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(GreaterThan node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Exponent node, Object data){
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Equals node, Object data){
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+    public Object visit(Throw node, Object data){ 
+        //throw ...
+        node.e.accept(this, data);
+        return data; 
+    }
+    public Object visit(StringExp node, Object data){ 
+        return data; 
+    }
+    public Object visit(Return node, Object data){ 
+        node.e.accept(this, data);
+        return data; 
+    }
+    public Object visit(Or node, Object data){
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+    public Object visit(Null node, Object data){ 
+        return data; 
+    }
+
+    public Object visit(NotEquals node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return data; 
+    }
+
+    public Object visit(Multiply node, Object data){ 
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
         return data; 
     }
 }

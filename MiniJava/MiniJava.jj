@@ -16,12 +16,20 @@ public class MiniJava {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("ast_test1.java");
+    FileReader fileReader = new FileReader("ast_test2.java");
  
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
+  
+    System.out.println("\n\nGenerating Symbol Table");
+    SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
+    SymbolTable st = v3.symbolTable;
+    s.accept(v3,"");
+    System.out.println(st);
+  
+
 
   }
 
@@ -74,7 +82,6 @@ TOKEN:
   |<ENUM: "enum">
   |<FINAL: "final">
   |<FINALLY: "finally">
-  |<FLOAT: "float">
   |<GOTO: "goto">
   |<IMPLEMENTS: "implements">
   |<IMPORT: "import">
@@ -198,20 +205,20 @@ If IfBlock():
 }
 
 MethodDecl MethodDeclaration():
-{Token t, t1; Identifier type, name; VarDecl v; VarDeclList args = null; VarDeclList vars = null; StatementList statements = null; Exp returns = null;}
+{Token t, t1; Identifier type, name; boolean is_array = false; Formal td; VarDecl v; FormalList args = null; VarDeclList vars = null; StatementList statements = null; Exp returns = null;}
 {
     ((<PUBLIC> 
     | <PRIVATE>
     | <PROTECTED>) 
     (<STATIC>)? 
-    (<VOID> {type = new Identifier("void");} | t=<IDENTIFIER> {type = new Identifier(t.image);} ) 
-    t1=<IDENTIFIER> {name = new Identifier(t1.image);} <LPAREN> (v = TypeDeclaration() {args = new VarDeclList(v, args);} (<COMMA> v = TypeDeclaration() {args = new VarDeclList(v, args);})*)? <RPAREN> 
+    (<VOID> {type = new Identifier("void");} | (t=<IDENTIFIER> {type = new Identifier(t.image);} (<LBRACKET><RBRACKET> {is_array = true;})?)) 
+    t1=<IDENTIFIER> {name = new Identifier(t1.image);} <LPAREN> (td = FormalTypeDeclaration() {args = new FormalList(td, args);} (<COMMA> td = FormalTypeDeclaration() {args = new FormalList(td, args);})*)? <RPAREN> 
     <LBRACE> 
         (LOOKAHEAD(4) v = TypeDeclaration() <SEMICOLON> {vars = new VarDeclList(v, vars);})*
         statements = StatementList()
         (<RETURN> returns = ExprVal2() <SEMICOLON>)?
      <RBRACE>)
-     {return new MethodDecl(type, name, args, vars, statements, returns);}
+     {return new MethodDecl(type, is_array, name, args, vars, statements, returns);}
 }
 
 While WhileLoop():
@@ -259,6 +266,13 @@ VarDecl TypeDeclaration():
 {
   t1=<IDENTIFIER>(<LBRACKET><RBRACKET> {is_array = true;})? t2=<IDENTIFIER>
   {return new VarDecl(new Identifier(t1.image), new Identifier(t2.image), is_array);}
+}
+
+Formal FormalTypeDeclaration():
+{Token t1, t2; boolean is_array = false;}
+{
+  t1=<IDENTIFIER>(<LBRACKET><RBRACKET> {is_array = true;})? t2=<IDENTIFIER>
+  {return new Formal(new Identifier(t1.image), new Identifier(t2.image), is_array);}
 }
 
 Statement Assignment():
