@@ -39,8 +39,9 @@ class Demo{
       while((j < n) && (0 < j)){
          if (j*j < n){
             log[j] = j*j;
-
-
+         }
+         else if (j + 1 > 10){
+            n = n + 2;
          }
          else{
             log[j] = j*j-n;

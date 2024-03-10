@@ -108,11 +108,11 @@ import syntaxtree.*;
         }
         String elif_block = "";
         if (node.elif_block != null){
-             elif_block = (String) node.elif_block.accept(this,indent+1);
+             elif_block = (String) node.elif_block.accept(this,indent);
         }
         String else_block = "";
         if (node.else_block != null){
-             else_block = ind + "else{\n" + (String) node.else_block.accept(this,indent+1) + "\n" + ind + "}";
+             else_block = ind + "else{\n" + (String) node.else_block.accept(this,indent+1) + "\n" + ind + "}\n";
         }
           return ind + "if ("+expr + "){\n" + if_block + "\n" + ind + "}" + elif_block + "\n" + else_block; 
    }
@@ -124,7 +124,7 @@ import syntaxtree.*;
      if (node.s != null){
           b = (String)node.s.accept(this,indent+1);
      }
-     return ind + "white ("+expr + "){\n" + b + "\n" + "}";
+     return ind + "white ("+expr + "){\n" + b + "\n" + ind+"}\n";
 
    }
    public Object visit(Print node, Object data){
@@ -292,12 +292,13 @@ import syntaxtree.*;
         if (node.block != null){
              block = (String) node.block.accept(this,indent + 1);
         }
+        String sig = "else if ("+e+"){\n"+block + "\n"+ind+"}\n";
         if (node.n!=null){
-            String e1 = (String) node.n.accept(this,indent);
-            e = e1 + ind+"else if ("+e+"){\n"+block + "\n"+ind+"}";
+            String sig1 = (String) node.n.accept(this,indent);
+            sig = sig1 + ind+sig;
         }
 
-        return e;
+        return sig;
    }
 
    public Object visit(FormalList node, Object data){
