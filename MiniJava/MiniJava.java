@@ -13,11 +13,20 @@ public class MiniJava implements MiniJavaConstants {
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
 
+
+    System.out.println("\n\nPretty Print the Program");
+    Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
+    String src = (String) s.accept(v2, 0);
+    System.out.println(src);
+
+
+    /*
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
     SymbolTable st = v3.symbolTable;
     s.accept(v3,"");
     System.out.println(st);
+    */
 
 
 
@@ -895,7 +904,7 @@ public class MiniJava implements MiniJavaConstants {
       break;
     case INTEGER:
       t = jj_consume_token(INTEGER);
-                   e1 = new IntegerLiteral(Integer.parseInt(t.image)); {if (true) return e1;}
+                   e1 = new IntegerLiteral(t.image); {if (true) return e1;}
       break;
     case CHARACTER:
       t = jj_consume_token(CHARACTER);
@@ -933,19 +942,6 @@ public class MiniJava implements MiniJavaConstants {
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(1, xla); }
-  }
-
-  static private boolean jj_3R_25() {
-    if (jj_scan_token(NOT_EQUALS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_22() {
-    if (jj_3R_26()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_27()) jj_scanpos = xsp;
-    return false;
   }
 
   static private boolean jj_3R_63() {
@@ -1336,6 +1332,19 @@ public class MiniJava implements MiniJavaConstants {
   static private boolean jj_3R_13() {
     if (jj_scan_token(LBRACKET)) return true;
     if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_25() {
+    if (jj_scan_token(NOT_EQUALS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_22() {
+    if (jj_3R_26()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_27()) jj_scanpos = xsp;
     return false;
   }
 

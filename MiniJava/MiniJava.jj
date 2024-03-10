@@ -17,18 +17,27 @@ public class MiniJava {
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
     FileReader fileReader = new FileReader("ast_test1.java");
- 
+  
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     s.accept(v1, 0);
-  
+    
+    
+    System.out.println("\n\nPretty Print the Program");
+    Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
+    String src = (String) s.accept(v2, 0);
+    System.out.println(src);
+    
+
+    /*
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
     SymbolTable st = v3.symbolTable;
     s.accept(v3,"");
     System.out.println(st);
-  
+    */
+
 
 
   }
@@ -472,7 +481,7 @@ Exp ExprBase():
 {Token t; Exp e1;}
 {
     t=<STRING> {e1 = new StringExp(t.image); return e1;}
-    | t=<INTEGER> {e1 = new IntegerLiteral(Integer.parseInt(t.image)); return e1;}
+    | t=<INTEGER> {e1 = new IntegerLiteral(t.image); return e1;}
     | t=<CHARACTER> {e1 = new CharacterExp(t.image); return e1;}
     | t=<NULL>{e1 = new Null(); return e1;}
     | t=<TRUE>{e1 = new True(); return e1;}

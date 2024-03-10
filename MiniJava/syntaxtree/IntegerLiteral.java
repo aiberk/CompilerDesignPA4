@@ -1,10 +1,10 @@
 package syntaxtree;
 
 public class IntegerLiteral extends Exp{
-    public int i;
+    public String s;
     
-    public IntegerLiteral(int i){
-        this.i=i;
+    public IntegerLiteral(String i){
+        this.s=i;
     }
 
     public Object accept(Visitor visitor, Object data) {

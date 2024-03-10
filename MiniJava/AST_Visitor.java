@@ -267,8 +267,8 @@ import syntaxtree.*;
    public Object visit(IntegerLiteral node, Object data){
         System.out.print(indentString() + getClassName(node));
         ++indent;
-        int i = node.i;
-        System.out.println(" "+i);
+        String s = node.s;
+        System.out.println(" "+s);
         --indent;
         return data;
    }

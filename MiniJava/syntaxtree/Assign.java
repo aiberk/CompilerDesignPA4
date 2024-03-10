@@ -6,6 +6,7 @@ public class Assign extends Statement{
     
     public Assign(Identifier i,Exp e){
         this.i=i; this.e=e;
+        /*this.i = this.e */
     }
 
     public Object accept(Visitor visitor, Object data) {
