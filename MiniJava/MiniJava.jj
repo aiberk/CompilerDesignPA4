@@ -30,13 +30,13 @@ public class MiniJava {
     System.out.println(src);
     
 
-    /*
+    
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
     SymbolTable st = v3.symbolTable;
     s.accept(v3,"");
     System.out.println(st);
-    */
+    
 
 
 

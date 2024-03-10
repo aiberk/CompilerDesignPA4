@@ -195,7 +195,7 @@ public class SymbolTableVisitor implements Visitor {
     }
 
     public Object visit(IntegerLiteral node, Object data){ 
-        int i=node.i;
+        String s=node.s;
 
         return data; 
     }
