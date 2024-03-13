@@ -86,7 +86,7 @@ public class SymbolTableVisitor implements Visitor {
   
   public Object visit(ClassDecl node, Object data){ 
     String dt = (String) data + ((( String)data).length() == 0 ? node.i.s : "$" + node.i.s);
-
+    symbolTable.classes.put(dt, node);
     node.i.accept(this, dt);
     if (node.v != null){
         node.v.accept(this, dt);
