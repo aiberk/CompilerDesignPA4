@@ -1,6 +1,6 @@
 /*
 
- java -classpath javacc.jar javacc MiniC.jj
+java -classpath javacc.jar javacc MiniC.jj
 javac MiniC.java
 java MiniC
  
@@ -24,8 +24,7 @@ public class MiniC {
     MethodDeclList n = t.Start();
     Visitor v2 = new C2Python_Visitor();
     String s = (String) n.accept(v2, 0);
-    System.out.println("#include <stdio.h>\n#include <stdbool.h>\nvoid print(int n){printf(\"%10d\\n\",n);}");
-    System.out.println(s);
+    System.out.println(s + "\nmain(100)");
   }
 
 }

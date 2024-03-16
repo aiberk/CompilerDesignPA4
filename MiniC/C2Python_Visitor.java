@@ -28,10 +28,13 @@ import syntaxtree.*;
      return null;
    }
    public Object visit(VarDecl node, Object data){
+        /*
         int indent = (int) data; 
         String t = (String) node.t.accept(this,indent);
         String i = (String) node.i.accept(this,indent);
         return indentString(indent)+t + " "+i +";\n";
+        */
+        return null;
    }
    public Object visit(MethodDecl node, Object data){
         // 
@@ -51,20 +54,15 @@ import syntaxtree.*;
             statementList = (String) node.s.accept(this,indent+1);
         }
         String expr = (String) node.e.accept(this,indent);
-        return 
-        indentString(indent)+
-        type+" "+id+"("+formalList+"){\n"+
-        varList +
-        statementList+
-        indentString(indent+1)+"return "+expr +";\n"+
-        indentString(indent)+"}\n";
+        return indentString(indent) + "def "+id + "(" + formalList+") -> "+type + ":\n"+statementList + "\n"+indentString(indent + 1) + "return "+expr + "\n";
+
    }
    public Object visit(Formal node, Object data){
         // 
         int indent = (int) data; 
         String type = (String) node.t.accept(this,indent);
         String id = (String) node.i.accept(this,indent);
-        return type+" "+id;
+        return id + ":" + type;
    }
 
    public Object visit(IntArrayType node, Object data){
@@ -73,12 +71,12 @@ import syntaxtree.*;
    public Object visit(IntegerType node, Object data){
         // 
         int indent = (int) data; 
-        return "int ";
+        return "int";
    }
    public Object visit(BooleanType node, Object data){
         // 
         int indent = (int) data; 
-        return "bool ";
+        return "bool";
    }
    public Object visit(IdentifierType node, Object data){
      return null;
@@ -91,9 +89,9 @@ import syntaxtree.*;
             result = (String) node.slist.accept(this,indent+1);
         }
         
-        return indentString(indent)+"{\n"+
+        return indentString(indent)+"\n"+
                result+
-               indentString(indent)+"}\n";
+               indentString(indent)+"\n";
    }
    public Object visit(If node, Object data){
         // 
@@ -102,9 +100,9 @@ import syntaxtree.*;
         String s1 = (String) node.s1.accept(this,indent+1);
         String s2 = (String) node.s2.accept(this,indent+1);
         return indentString(indent)+
-        "if ("+expr+")\n"+
+        "if "+expr+":"+
         s1+
-        indentString(indent)+"else\n"+
+        indentString(indent)+"else:"+
         s2;
    }
    public Object visit(While node, Object data){
@@ -115,7 +113,7 @@ import syntaxtree.*;
         int indent = (int) data; 
         String e = (String) node.e.accept(this,indent);
         //--indent;
-        return indentString(indent) + "print("+e+");\n";
+        return indentString(indent) + "print("+e+")\n";
    }
    public Object visit(Assign node, Object data){
         // 
@@ -123,7 +121,7 @@ import syntaxtree.*;
         String i = (String) node.i.accept(this,indent);
         String e = (String) node.e.accept(this,indent);
         //--indent;
-        return indentString(indent)+i+" = "+e+";\n";
+        return indentString(indent)+i+" = "+e+"\n";
    }
 
    
@@ -182,26 +180,26 @@ import syntaxtree.*;
    public Object visit(IntegerLiteral node, Object data){
         int indent = (int) data; 
         int i = node.i;
-        return " "+i+" ";
+        return ""+i + "";
    }
    public Object visit(True node, Object data){
         // 
         int indent = (int) data; 
         //--indent;
-        return "true";
+        return "True";
    }
    public Object visit(False node, Object data){
         // 
         int indent = (int) data; 
         //--indent;
-        return "false";
+        return "False";
    }
    public Object visit(IdentifierExp node, Object data){
 
         int indent = (int) data; 
         String s = node.s;
         //--indent;
-        return " "+s+" ";
+        return ""+s+"";
    }
    public Object visit(This node, Object data){
      return null;
@@ -252,7 +250,7 @@ import syntaxtree.*;
         String f = (String) node.f.accept(this,indent);
         if (node.flist!=null){
             String f1 = (String) node.flist.accept(this,indent);
-            f = f1 +","+f;
+            f = f1 +", "+f;
         }
         //--indent;
         return f;

@@ -12,8 +12,7 @@ public class MiniC implements MiniCConstants {
     MethodDeclList n = t.Start();
     Visitor v2 = new C2Python_Visitor();
     String s = (String) n.accept(v2, 0);
-    System.out.println("#include <stdio.h>\n#include <stdbool.h>\nvoid print(int n){printf(\"%10d\\n\",n);}");
-    System.out.println(s);
+    System.out.println(s + "\nmain(100)");
   }
 
 /* Program Syntax */
@@ -419,6 +418,11 @@ public class MiniC implements MiniCConstants {
     finally { jj_save(6, xla); }
   }
 
+  static private boolean jj_3R_14() {
+    if (jj_3R_18()) return true;
+    return false;
+  }
+
   static private boolean jj_3R_19() {
     if (jj_scan_token(INT)) return true;
     return false;
@@ -566,11 +570,6 @@ public class MiniC implements MiniCConstants {
 
   static private boolean jj_3R_13() {
     if (jj_3R_17()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_14() {
-    if (jj_3R_18()) return true;
     return false;
   }
 
