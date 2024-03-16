@@ -12,7 +12,11 @@ public class MiniC implements MiniCConstants {
     MethodDeclList n = t.Start();
     Visitor v2 = new C2Python_Visitor();
     String s = (String) n.accept(v2, 0);
-    System.out.println(s + "\nmain(100)");
+    PrintWriter out = new PrintWriter("fibs.py");
+    out.println(s + "\nmain(1)");
+    out.close();
+    System.out.println("fibs.py generated!");
+
   }
 
 /* Program Syntax */
@@ -418,16 +422,6 @@ public class MiniC implements MiniCConstants {
     finally { jj_save(6, xla); }
   }
 
-  static private boolean jj_3R_14() {
-    if (jj_3R_18()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_19() {
-    if (jj_scan_token(INT)) return true;
-    return false;
-  }
-
   static private boolean jj_3_6() {
     if (jj_scan_token(TIMES_OP)) return true;
     if (jj_3R_13()) return true;
@@ -570,6 +564,16 @@ public class MiniC implements MiniCConstants {
 
   static private boolean jj_3R_13() {
     if (jj_3R_17()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_14() {
+    if (jj_3R_18()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_19() {
+    if (jj_scan_token(INT)) return true;
     return false;
   }
 

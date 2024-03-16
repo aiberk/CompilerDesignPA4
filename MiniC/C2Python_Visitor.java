@@ -1,11 +1,5 @@
 import syntaxtree.*;
 
-/* 
- * this class uses the Visitor pattern 
- * to pretty print the miniC program
- * The idea is to have each node return its string representation!
-*/
-
  public class C2Python_Visitor implements Visitor
  {
  

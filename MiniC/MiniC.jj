@@ -3,6 +3,7 @@
 java -classpath javacc.jar javacc MiniC.jj
 javac MiniC.java
 java MiniC
+gcc -o fibs fibs.c
  
  */
 
@@ -24,7 +25,11 @@ public class MiniC {
     MethodDeclList n = t.Start();
     Visitor v2 = new C2Python_Visitor();
     String s = (String) n.accept(v2, 0);
-    System.out.println(s + "\nmain(100)");
+    PrintWriter out = new PrintWriter("fibs.py");
+    out.println(s + "\nmain(1)");
+    out.close();
+    System.out.println("fibs.py generated!");
+
   }
 
 }
