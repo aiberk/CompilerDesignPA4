@@ -1,12 +1,9 @@
 /*
- * This is MiniC.jj file.
- * It will build a tree we can traverse using the Visitor pattern!
- * The language is MiniC, which is the subset of MiniJava
- * consisting of only MethodDecls (i.e. no classes or instance variables)
- * and the only types are int and boolean
- * and the only statments are Assign, If, and Print
- * all of the expressions are available except for && 
- * that is <, +,-,*  integerLiterals and IdentifierExpressions
+
+ java -classpath javacc.jar javacc MiniC.jj
+javac MiniC.java
+java MiniC
+ 
  */
 
 options {
@@ -15,45 +12,21 @@ options {
 
 PARSER_BEGIN(MiniC)
 import syntaxtree.*;
+import java.io.*;
 
 public class MiniC {
 
   /** Main entry point. */
-  public static void main(String args[]) {
-    MiniC t = new MiniC(System.in);
-    try {
-      MethodDeclList n = t.Start();
+  public static void main(String args[]) throws ParseException, FileNotFoundException {
+   FileReader fileReader = new FileReader("fibs.c");
 
-      System.out.println("\n\nPretty Printing the Abstract Syntax Tree");
-      Visitor v1 = new AST_Visitor();  // pretty prints the Abstract Syntax Tree
-      n.accept(v1, 0);
-
-      System.out.println("\n\nPretty Print the Program");
-      Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
-      String s = (String) n.accept(v2, 0);
-      System.out.println("#include <stdio.h>\n#include <stdbool.h>\nvoid print(int n){printf(\"%10d\\n\",n);}");
-      System.out.println(s);
-
-      System.out.println("\n\nGenerating Symbol Table");
-      SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
-      SymbolTable st = v3.symbolTable;
-      n.accept(v3,"");
-      System.out.println(st);
-
-      System.out.println("\n\nType Checking");
-      TypeCheckingVisitor v4 = new TypeCheckingVisitor(st);
-      n.accept(v4,"");
-      System.out.println(v4.num_errors+" type errors found");
-
-      System.out.println("\n\nDone!");
-
-    } catch (Exception e) {
-      System.out.println("Oops.");
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-    }
+    MiniC t = new MiniC(fileReader);
+    MethodDeclList n = t.Start();
+    Visitor v2 = new C2Python_Visitor();
+    String s = (String) n.accept(v2, 0);
+    System.out.println("#include <stdio.h>\n#include <stdbool.h>\nvoid print(int n){printf(\"%10d\\n\",n);}");
+    System.out.println(s);
   }
-
 
 }
 
@@ -354,5 +327,3 @@ ExpList ExpList() :
   (<COMMA> b=Exp() {a=new ExpList(a,b);})*
   {return a;}
 }
-
-
