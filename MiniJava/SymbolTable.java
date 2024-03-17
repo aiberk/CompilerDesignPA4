@@ -7,6 +7,7 @@ public class SymbolTable {
     public HashMap<String,MethodDecl> methods = new HashMap<String, MethodDecl>();
     public HashMap<String,VarDecl> variables = new HashMap<String, VarDecl>() ;
     public HashMap<String,Formal> signatures = new HashMap<String, Formal>() ;
+    //below: all we really need to use
     public HashMap<String, String> typeName = new HashMap<String, String>();
 
     public SymbolTable() {

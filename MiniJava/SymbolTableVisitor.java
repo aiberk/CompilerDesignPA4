@@ -128,6 +128,22 @@ public class SymbolTableVisitor implements Visitor {
 } 
 
     public Object visit(Formal node, Object data){ 
+      /*
+      class James{
+        public int get_stuff(int a, int b, int c){
+          return 100;
+        }
+      }
+
+      $James$get_stuff -> int (methods)
+      $James$get_stuff$a -> int (signatures)
+      $James$get_stuff$b -> int (signatures)
+      $James$get_stuff$c -> int (signatures)
+
+      '$James$get_stuff' in symbolTable.methods -> then it is a method
+      '$James$get_stuff' in symbolTable.variables -> then it is variable
+      
+      */
         String dt = (String) data + ((( String)data).length() == 0 ? node.i.s : "$" + node.i.s);
         node.t.accept(this, dt);
         node.i.accept(this, dt);
@@ -221,6 +237,20 @@ public class SymbolTableVisitor implements Visitor {
     }
 
     public Object visit(MethodDecl node, Object data){ 
+      /*
+      class James{
+        public int get_stuff(){
+          return 100;
+        }
+      }
+
+      $James$get_stuff -> int
+
+      '$James$get_stuff' in symbolTable.methods -> then it is a method
+      '$James$get_stuff' in symbolTable.variables -> then it is variable
+
+      */
+
         String dt = (String) data + ((( String)data).length() == 0 ? node.name.s : "$" + node.name.s);
         if (node.args != null){
           node.args.accept(this, dt);
@@ -361,6 +391,17 @@ public class SymbolTableVisitor implements Visitor {
     }
 
     public Object visit(VarDecl node, Object data){ 
+      /*
+      class J{
+        int j;
+        public int james(){
+          int a;
+        }
+      }
+      $J$j -> int
+      $J$james$a -> int
+      */
+
         String dt = (String) data + ((( String)data).length() == 0 ? node.i.s : "$" + node.i.s);
         node.t.accept(this, dt);
         node.i.accept(this, dt);

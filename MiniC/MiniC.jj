@@ -3,7 +3,6 @@
 java -classpath javacc.jar javacc MiniC.jj
 javac MiniC.java
 java MiniC
-gcc -o fibs fibs.c
  
  */
 
