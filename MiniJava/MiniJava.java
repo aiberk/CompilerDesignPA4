@@ -11,21 +11,22 @@ public class MiniJava implements MiniJavaConstants {
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
-    s.accept(v1, 0);
+    //s.accept(v1, 0);
 
-
+    /*
     System.out.println("\n\nPretty Print the Program");
     Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
     String src = (String) s.accept(v2, 0);
     System.out.println(src);
-
-
+    
+    */
 
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
     SymbolTable st = v3.symbolTable;
     s.accept(v3,"");
     System.out.println(st);
+
 
 
 
@@ -944,53 +945,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_63() {
-    return false;
-  }
-
-  static private boolean jj_3R_28() {
-    if (jj_scan_token(LT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_41() {
-    if (jj_scan_token(PERCENT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_23() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_28()) {
-    jj_scanpos = xsp;
-    if (jj_3R_29()) {
-    jj_scanpos = xsp;
-    if (jj_3R_30()) {
-    jj_scanpos = xsp;
-    if (jj_3R_31()) {
-    jj_scanpos = xsp;
-    if (jj_3R_32()) return true;
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_62() {
-    if (jj_scan_token(LPAREN)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_10() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_13()) jj_scanpos = xsp;
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_61() {
     if (jj_scan_token(DOT)) return true;
     return false;
@@ -1345,6 +1299,53 @@ public class MiniJava implements MiniJavaConstants {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_27()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_63() {
+    return false;
+  }
+
+  static private boolean jj_3R_28() {
+    if (jj_scan_token(LT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_41() {
+    if (jj_scan_token(PERCENT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_23() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_28()) {
+    jj_scanpos = xsp;
+    if (jj_3R_29()) {
+    jj_scanpos = xsp;
+    if (jj_3R_30()) {
+    jj_scanpos = xsp;
+    if (jj_3R_31()) {
+    jj_scanpos = xsp;
+    if (jj_3R_32()) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_62() {
+    if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_10() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_13()) jj_scanpos = xsp;
+    if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 

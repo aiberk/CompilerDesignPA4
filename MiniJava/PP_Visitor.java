@@ -1,3 +1,9 @@
+/*
+  Pretty Printer Demo: https://www.loom.com/share/9bc62050e4754f328c372f34824a2795?sid=06fac518-4bcc-41bd-93dd-64bfb0323a70
+  Pretty Printer Creation Explantion: https://www.loom.com/share/2214772f2527470fadd4cc7f532db369?sid=d60e4834-6f6e-49cd-8bfe-dbe306b289ac
+  Teammembers: James Petullo and Aby Iberkleid
+*/
+
 import syntaxtree.*;
 
 
@@ -124,7 +130,7 @@ import syntaxtree.*;
      if (node.s != null){
           b = (String)node.s.accept(this,indent+1);
      }
-     return ind + "white ("+expr + "){\n" + b + "\n" + ind+"}\n";
+     return ind + "while ("+expr + "){\n" + b + "\n" + ind+"}\n";
 
    }
    public Object visit(Print node, Object data){

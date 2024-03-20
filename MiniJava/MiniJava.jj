@@ -1,4 +1,9 @@
 /*
+
+  Teammembers: James Petullo and Aby Iberkleid
+*/
+
+/*
  *  %java -classpath javacc.jar javacc MiniJava.jj
  *  %javac MiniJava.java
  *  %java MiniJava
@@ -21,15 +26,15 @@ public class MiniJava {
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
-    s.accept(v1, 0);
+    //s.accept(v1, 0);
     
-    
+    /*
     System.out.println("\n\nPretty Print the Program");
     Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
     String src = (String) s.accept(v2, 0);
     System.out.println(src);
     
-
+    */
     
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
@@ -37,6 +42,7 @@ public class MiniJava {
     s.accept(v3,"");
     System.out.println(st);
     
+
 
 
 

@@ -18,7 +18,7 @@ public class SymbolTable {
         for (String key : classes.keySet()) {
             result += key + ": "+ classes.get(key).toString() + ", \n";
         }
-        result += "\n";
+        result += "\nMethods: \n";
         for (String key : methods.keySet()) {
             result += key + ": "+ methods.get(key).toString() + ", \n";
         }
