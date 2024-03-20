@@ -120,7 +120,7 @@ public class TypeCheckingVisitor implements Visitor {
         
         MethodDecl m = this.attr_method_obj((Attribute) node.e1, data);
         String m_path = this.attr_method_obj_path((Attribute) node.e1, data);
-        String return_type = (String) m.name.accept(this, data);
+        String return_type = this.format_type(m.type.s, m.is_array);
         String args = "";
         if (m.args != null){
             args = (String) m.args.accept(this, m_path);
@@ -194,6 +194,9 @@ public class TypeCheckingVisitor implements Visitor {
             return this.format_type(node.t.s, node.is_array);
         } 
         if (node.t.s.equals("int")) {
+            return this.format_type(node.t.s, node.is_array);
+        }
+        if (node.t.s.equals("String")) {
             return this.format_type(node.t.s, node.is_array);
         }
         for (String key : this.st.classes.keySet()){
@@ -722,7 +725,7 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(Attribute node, Object data){ 
         String attr = node.i.s;
         String t = (String) node.e.accept(this, data);
-        if (!this.st.methods.containsKey(t + "$" + attr) || !this.st.variables.containsKey(t + "$" + attr)){
+        if (!this.st.methods.containsKey(t + "$" + attr) && !this.st.variables.containsKey(t + "$" + attr)){
             System.out.println("Object '"+t+"' has no attribute '"+attr+"'");
             num_errors++;
             return "void";
