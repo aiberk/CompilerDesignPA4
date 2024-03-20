@@ -42,6 +42,11 @@ public class MiniJava {
     s.accept(v3,"");
     System.out.println(st);
     
+    /*
+    System.out.println("\n\nType checking...");
+    TypeCheckingVisitor v4 = new TypeCheckingVisitor(st); // generates a SymbolTable
+    s.accept(v4,"");
+    */
 
 
 

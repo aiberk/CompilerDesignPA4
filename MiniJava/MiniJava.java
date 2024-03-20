@@ -27,6 +27,11 @@ public class MiniJava implements MiniJavaConstants {
     s.accept(v3,"");
     System.out.println(st);
 
+    /*
+    System.out.println("\n\nType checking...");
+    TypeCheckingVisitor v4 = new TypeCheckingVisitor(st); // generates a SymbolTable
+    s.accept(v4,"");
+    */
 
 
 
@@ -945,32 +950,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_61() {
-    if (jj_scan_token(DOT)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_60() {
-    if (jj_scan_token(LBRACKET)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_59() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) {
-    jj_scanpos = xsp;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
   static private boolean jj_3_1() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
@@ -1346,6 +1325,32 @@ public class MiniJava implements MiniJavaConstants {
     xsp = jj_scanpos;
     if (jj_3R_13()) jj_scanpos = xsp;
     if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_61() {
+    if (jj_scan_token(DOT)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_60() {
+    if (jj_scan_token(LBRACKET)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_59() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_60()) {
+    jj_scanpos = xsp;
+    if (jj_3R_61()) {
+    jj_scanpos = xsp;
+    if (jj_3R_62()) {
+    jj_scanpos = xsp;
+    if (jj_3R_63()) return true;
+    }
+    }
+    }
     return false;
   }
 
