@@ -17,13 +17,13 @@ public class TypeCheckingVisitor implements Visitor {
         return tname + (is_array ? "[]" : "");
     }
 
-    public static String type_lookup(String data, String label){
-
-        if (this.st.typeName.containsKey(data + "$" + label)){
-            return this.st.typeName.get(data + "$" + label);
+    public String type_lookup(Object data, String label){
+        String dt = (String) data;
+        if (this.st.typeName.containsKey(dt + "$" + label)){
+            return this.st.typeName.get(dt + "$" + label);
         }
         
-        return this.st.typeName.get(data.replaceAll("\$\\w+$", "") + "$" + label);
+        return this.st.typeName.get(dt.replaceAll("\\$\\w+$", "") + "$" + label);
         
     }
 
@@ -64,7 +64,7 @@ public class TypeCheckingVisitor implements Visitor {
             num_errors++;
         }
         if (!target_type.replaceAll("\\[\\]$", "").equals(t2)){
-            System.out.println("Array assign types do not match: "target_type.replaceAll("\\[\\]$", "") + " != "+t2);
+            System.out.println("Array assign types do not match: "+target_type.replaceAll("\\[\\]$", "") + " != "+t2);
             num_errors++;
         }
         return "void";
@@ -118,20 +118,20 @@ public class TypeCheckingVisitor implements Visitor {
 
     public Object visit(Call node, Object data){ 
         
-        MethodDecl m = this.attr_method_obj(node.e1, data);
-        String m_path = this.attr_method_obj_path(node.e1, data);
-        String return_type = (String) node.n.accept(this, data);
+        MethodDecl m = this.attr_method_obj((Attribute) node.e1, data);
+        String m_path = this.attr_method_obj_path((Attribute) node.e1, data);
+        String return_type = (String) m.name.accept(this, data);
         String args = "";
         if (m.args != null){
             args = (String) m.args.accept(this, m_path);
         }
 
         String vars = "";
-        if (node.vars != null){
-            vars = (String) node.vars.accept(this, data);
+        if (node.e2 != null){
+            vars = (String) node.e2.accept(this, data);
         }
         if (!args.equals(vars)) {
-            System.out.println("Call Type error: " + paramTypes + " != " + argTypes+" in method "+m.name.s);
+            System.out.println("Call Type error: " + args + " != " + vars+" in method "+m.name.s);
             num_errors++;
             return "void";
         }
@@ -196,16 +196,16 @@ public class TypeCheckingVisitor implements Visitor {
         if (node.t.s.equals("int")) {
             return this.format_type(node.t.s, node.is_array);
         }
-        for (String key : this.st.classes){
+        for (String key : this.st.classes.keySet()){
             if (node.t.s.equals(key)){
                 return this.format_type(node.t.s, node.is_array);
             }
         }
-        else {
-            System.out.println("Unknown Type, Type error: " + node.t.s + " is not a valid type");
-            num_errors++;
+        
+        System.out.println("Unknown Type, Type error: " + node.t.s + " is not a valid type");
+        num_errors++;
             
-        }
+        
         return "void";
     }
 
@@ -322,7 +322,7 @@ public class TypeCheckingVisitor implements Visitor {
           node.statements.accept(this, dt);
         }
         if (node.returns != null){
-          returns = node.returns.accept(this, dt);
+          returns = (String) node.returns.accept(this, dt);
         }
         
         if (node.type.s.equals("void") && returns != null){
@@ -383,14 +383,17 @@ public class TypeCheckingVisitor implements Visitor {
             System.out.println("Unsupported new object creation format");
             return "void";
         }
-        if (!(node.i.e1 instanceof IdentifierExp)){
+        if (!(((Call) node.i).e1 instanceof IdentifierExp)){
             System.out.println("Unsupported new object creation format");
             return "void";
         }
         
-        return node.i.e1.s; 
+        return ((IdentifierExp) ((Call) node.i).e1).s; 
     }
-
+    public Object visit(ExpStatement node, Object data){ 
+        node.e.accept(this, data);
+        return "void"; 
+    }
 
     public Object visit(Not node, Object data){ 
         String t = (String) node.e.accept(this, data);
@@ -490,16 +493,16 @@ public class TypeCheckingVisitor implements Visitor {
         if (node.t.s.equals("int")) {
             return this.format_type(node.t.s, node.is_array);
         }
-        for (String key : this.st.classes){
+        for (String key : this.st.classes.keySet()){
             if (node.t.s.equals(key)){
                 return this.format_type(node.t.s, node.is_array);
             }
         }
-        else {
-            System.out.println("Unknown Type, Type error: " + node.t.s + " is not a valid type");
-            num_errors++;
+      
+        System.out.println("Unknown Type, Type error: " + node.t.s + " is not a valid type");
+        num_errors++;
             
-        }
+        
         return "void";
 
     }
@@ -705,12 +708,12 @@ public class TypeCheckingVisitor implements Visitor {
         return null;
     }
 
-    public static MethodDecl attr_method_obj(Attribute node, Object data){
+    public MethodDecl attr_method_obj(Attribute node, Object data){
         String attr = node.i.s;
         String t = (String) node.e.accept(this, data);
         return this.st.methods.get(t + "$" + attr);
     }
-    public static String attr_method_obj_path(Attribute node, Object data){
+    public String attr_method_obj_path(Attribute node, Object data){
         String attr = node.i.s;
         String t = (String) node.e.accept(this, data);
         return t + "$" + attr;
@@ -724,7 +727,7 @@ public class TypeCheckingVisitor implements Visitor {
             num_errors++;
             return "void";
         }
-        return this.st.typeNames.get(t + "$" + attr);
+        return this.st.typeName.get(t + "$" + attr);
     }
     public Object visit(InPlaceOp node, Object data){ 
         //node.i++ or node.i--

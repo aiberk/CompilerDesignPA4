@@ -21,20 +21,20 @@ public class MiniJava {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("ast_test1.java");
+    FileReader fileReader = new FileReader("t_check.java");
   
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
     Visitor v1 = new AST_Visitor();
     //s.accept(v1, 0);
     
-    /*
+    
     System.out.println("\n\nPretty Print the Program");
     Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
     String src = (String) s.accept(v2, 0);
     System.out.println(src);
     
-    */
+    
     
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
@@ -42,11 +42,11 @@ public class MiniJava {
     s.accept(v3,"");
     System.out.println(st);
     
-    /*
+    
     System.out.println("\n\nType checking...");
     TypeCheckingVisitor v4 = new TypeCheckingVisitor(st); // generates a SymbolTable
     s.accept(v4,"");
-    */
+    
 
 
 
