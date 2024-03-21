@@ -6,6 +6,8 @@ class James{
         boolean m_result;
         c = new Joe();
         n_j = c.j * 2 + 1;
+        my_arr["James"] = 10;
+        my_arr[10] = "james";
         m_result = this.get_bool();
         return c.joe(a, b);
     }

@@ -119,6 +119,9 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(Call node, Object data){ 
         
         MethodDecl m = this.attr_method_obj((Attribute) node.e1, data);
+        if (m == null){
+            return "void";
+        }
         String m_path = this.attr_method_obj_path((Attribute) node.e1, data);
         String return_type = this.format_type(m.type.s, m.is_array);
         String args = "";
@@ -234,7 +237,7 @@ public class TypeCheckingVisitor implements Visitor {
     public Object visit(IdentifierExp node, Object data){ 
         String s=node.s;
         if (s.equals("this")){
-            return (((String) data).split("$"))[0];
+            return (((String) data).split("\\$"))[0];
         }
         return this.type_lookup(data, s);
 
@@ -714,6 +717,10 @@ public class TypeCheckingVisitor implements Visitor {
     public MethodDecl attr_method_obj(Attribute node, Object data){
         String attr = node.i.s;
         String t = (String) node.e.accept(this, data);
+        if (!this.st.methods.containsKey(t + "$" + attr)){
+            System.out.println("Object '"+t+"' has no attribute '"+attr+"'");
+            return null;
+        }
         return this.st.methods.get(t + "$" + attr);
     }
     public String attr_method_obj_path(Attribute node, Object data){
