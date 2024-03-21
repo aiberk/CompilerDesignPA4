@@ -6,7 +6,7 @@ public class MiniJava implements MiniJavaConstants {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("t_check.java");
+    FileReader fileReader = new FileReader("t_check_1.java");
 
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
@@ -28,9 +28,11 @@ public class MiniJava implements MiniJavaConstants {
     System.out.println(st);
 
 
-    System.out.println("\n\nType checking...");
+    System.out.println("\n\nType Checking");
+    System.out.println("\n----------------");
     TypeCheckingVisitor v4 = new TypeCheckingVisitor(st); // generates a SymbolTable
     s.accept(v4,"");
+    System.out.println("Number of errors: " + v4.num_errors);
 
 
 
@@ -950,12 +952,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3_1() {
-    if (jj_3R_9()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_51() {
     if (jj_3R_52()) return true;
     return false;
@@ -1351,6 +1347,12 @@ public class MiniJava implements MiniJavaConstants {
     }
     }
     }
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_9()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
     return false;
   }
 

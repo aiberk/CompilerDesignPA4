@@ -340,7 +340,7 @@ public class TypeCheckingVisitor implements Visitor {
             return "void";
         }
         if (!returns.equals(this.format_type(node.type.s, node.is_array))) {
-            System.out.println("Method Return Type error: " + returns + " != " + this.format_type(node.type.s, node.is_array)+" in method"+node.name.s);
+            System.out.println("Method Return Type error: " + returns + " != " + this.format_type(node.type.s, node.is_array)+" in method "+node.name.s);
             num_errors++;
         }
 

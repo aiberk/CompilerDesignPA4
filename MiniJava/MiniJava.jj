@@ -1,6 +1,6 @@
 /*
 
-  Teammembers: James Petullo and Aby Iberkleid
+  Teammembers: James Petullo
 */
 
 /*
@@ -21,7 +21,7 @@ public class MiniJava {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("t_check.java");
+    FileReader fileReader = new FileReader("t_check_1.java");
   
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
@@ -43,9 +43,11 @@ public class MiniJava {
     System.out.println(st);
     
     
-    System.out.println("\n\nType checking...");
+    System.out.println("\n\nType Checking");
+    System.out.println("\n----------------");
     TypeCheckingVisitor v4 = new TypeCheckingVisitor(st); // generates a SymbolTable
     s.accept(v4,"");
+    System.out.println("Number of errors: " + v4.num_errors);
     
 
 
