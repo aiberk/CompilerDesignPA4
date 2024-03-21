@@ -21,11 +21,25 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(And node, Object data){ 
         // not in MiniC
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "# AND not implemented\n"; 
+    
+        String e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "cmpq %rdx, $1\n"
+        + "je "+ label1 + "\n"
+        + "pushq $0"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq %rax\n"
+        + label2+":\n"  
     } 
 
     public Object visit(ArrayAssign node, Object data){ 
@@ -226,14 +240,31 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(If node, Object data){ 
         // not implemented yet
-        Exp e=node.e;
-        Statement s1=node.s1;
-        Statement s2=node.s2;
         node.e.accept(this, data);
-        node.s1.accept(this, data);
-        node.s2.accept(this, data);
+        if (node.if_block != null){
+            node.if_block.accept(this,data);
+        }
+        if (node.elif_block != null){
+             node.elif_block.accept(this,data);
+        }
+        if (node.else_block != null){
+             node.else_block.accept(this,data);
+        }
 
         return "# If not implemented yet\n"; 
+    }
+
+    public Object visit(ElseIf node, Object data){
+        
+        node.e.accept(this,data);
+        if (node.block != null){
+            node.block.accept(this,data);
+        }
+        if (node.n != null){
+             node.n.accept(this,data);
+        }
+
+        return "# elseif not implemented yet\n";
     }
 
     public Object visit(IntArrayType node, Object data){ 
@@ -300,10 +331,10 @@ public class CodeGen_Visitor implements Visitor {
 
 
         formalOffset = 8;
-        String theLabel = i.s ; //labelMap.get(currClass) + i.s;
-        labelMap.put(currClass + i.s, theLabel);
+        String theLabel = node.name.s ; //labelMap.get(currClass) + i.s;
+        labelMap.put(currClass + node.name.s, theLabel);
 
-        currMethod = i.s;  // set "global variable"
+        currMethod = node.name.s;  // set "global variable"
         stackOffset = 0;
 
         
@@ -312,22 +343,24 @@ public class CodeGen_Visitor implements Visitor {
         //node.i.accept(this, data);
 
         // assign locations for formals
-        if (node.f != null){
-            formals += (String) node.f.accept(this, data);
+        if (node.args != null){
+            formals += (String) node.args.accept(this, data);
         }
 
         
 
         // assign locations for local variables
-        if (node.v != null){
-            locals += (String) node.v.accept(this, data);
+        if (node.vars != null){
+            locals += (String) node.vars.accept(this, data);
         }
 
-        if (node.s != null){
-            statementCode = (String) node.s.accept(this, data);
+        if (node.statements != null){
+            statementCode = (String) node.statements.accept(this, data);
         }
 
-        expressionCode = (String) node.e.accept(this, data);
+        if (node.returns != null){
+            expressionCode = (String) node.returns.accept(this, data);
+        }
 
         int stackChange = - stackOffset;
 
@@ -411,6 +444,11 @@ public class CodeGen_Visitor implements Visitor {
         node.i.accept(this, data);
 
         return "# NewObject not implemented\n"; 
+    }
+
+    public Object visit(ExpStatement node, Object data){ 
+        node.e.accept(this, data);
+        return "#ExpStatement not implemented"; 
     }
 
 
@@ -516,6 +554,25 @@ public class CodeGen_Visitor implements Visitor {
         return timesCode; 
     }
 
+    public Object visit(Multiply node, Object data){ 
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        String e1Code = (String) node.e1.accept(this, data);
+        String e2Code = (String) node.e2.accept(this, data);
+
+        String timesCode = 
+        
+        e1Code
+        + e2Code
+        + "# multiply:"+node.accept(ppVisitor,0)+"\n"
+        +   "popq %rdx\n"
+        +   "popq %rax\n"
+        +   "imulq %rdx, %rax\n"
+        +   "pushq %rax\n";
+
+        return timesCode; 
+    }
+
 
     public Object visit(True node, Object data){ 
         // not in MiniC
@@ -526,12 +583,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(VarDecl node, Object data){ 
         // find and store location of local variable
         // don't generate any code.
-        Type t=node.t;
-        Identifier i=node.i;
 
         stackOffset -= 8;
         String location = (stackOffset) + "(%rbp)";
-        String varName = currClass+"_"+currMethod+"_"+i.s;
+        String varName = currClass+"_"+currMethod+"_"+node.i.s;
         varMap.put(varName, location);
  
         //node.t.accept(this, data);
@@ -560,6 +615,154 @@ public class CodeGen_Visitor implements Visitor {
         node.s.accept(this, data);
 
         return "# while not implemented\n"; 
+    }
+    public Object visit(Throw node, Object data){ 
+        return "# throw not implemented";
+    }
+    public Object visit(StringExp node, Object data){ 
+        return "# String not implemented";
+    }
+    public Object visit(Return node, Object data){ 
+        //return ...
+        return "# Return not implemented";
+    }
+    public Object visit(Or node, Object data){
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        //String t1 = (String) node.e1.accept(this, data);
+        //String t2 = (String) node.e2.accept(this, data);
+        return "#Or not implemented";
+    }
+    public Object visit(Null node, Object data){ 
+        return "#Null not implemented";
+    }
+
+    public Object visit(NotEquals node, Object data){ 
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        /*
+        String t1 = (String) node.e1.accept(this, data);
+        String t2 = (String) node.e2.accept(this, data);
+        */
+        return "#NotEquals not implemented";
+    }
+
+    
+
+    public Object visit(Modulo node, Object data){ 
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        /*
+        String t1 = (String) node.e1.accept(this, data);
+        String t2 = (String) node.e2.accept(this, data);
+        */
+        return "#Modulo not implemented";
+    }
+
+    public Object visit(LessThanOrEqual node, Object data){ 
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        /*
+        String t1 = (String) node.e1.accept(this, data);
+        String t2 = (String) node.e2.accept(this, data);
+        */
+        return "#LessThanOrEqual not implemented";
+    }
+
+    public Object visit(InstanceOf node, Object data){ 
+    
+        node.e1.accept(this,indent);
+        node.e2.accept(this,indent);
+    
+        return "#InstanceOf not implemented";
+    }
+
+    public Object visit(Inline node, Object data){ 
+        //conditional ? if_true : if_false
+        node.conditional.accept(this, data);
+        node.conditional.accept(this, data);
+        node.conditional.accept(this, data);
+        return "#Inline not implemented";
+    }
+    
+    public Object visit(GreaterThanOrEqual node, Object data){
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return "#GreaterThanOrEqual not implemented";
+    }
+
+    public Object visit(GreaterThan node, Object data){ 
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return "#Greaterthan not implemented";
+    }
+
+    public Object visit(Exponent node, Object data){
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return "#Exponent not implemented";
+    }
+
+    public Object visit(Equals node, Object data){
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return "#Equals not implemented";
+    }
+
+    public Object visit(Divide node, Object data){ 
+        Exp e1=node.e1;
+        Exp e2=node.e2;
+        node.e1.accept(this, data);
+        node.e2.accept(this, data);
+        return "#Divide not implemented";
+    }
+
+    public Object visit(Continue node, Object data){
+        //continue statement
+        return "#Continue not implemented";
+    }
+
+    public Object visit(CharacterExp node, Object data){ 
+         return "#CharacterExp not implemented";
+    }
+
+    public Object visit(Break node, Object data){
+        return "#Break not implemented";
+    }
+
+    public Object visit(Attribute node, Object data){ 
+        String attr = node.i.s;
+        node.e.accept(this, data);
+        return "# Attribute not implemented";
+    }
+    public Object visit(InPlaceOp node, Object data){ 
+        //node.i++ or node.i--
+        //use node.is_increment to decide between the above
+        return "# InPlaceOp not implemented";
+    }
+    public Object visit(For node, Object data){ 
+        /*
+        for (node.type node.i = node.e; node.e1; node.op){
+             node.for_block
+        }
+        */
+        node.type.accept(this, data);
+        node.i.accept(this, data);
+        node.e.accept(this, data);
+        node.e1.accept(this, data);
+        node.op.accept(this, data);
+        if (node.for_block != null){
+             node.for_block.accept(this, data);
+        }
+        return "# For not implemented";
     }
 
 }
