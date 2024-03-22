@@ -10,37 +10,37 @@ public class MiniJava implements MiniJavaConstants {
 
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
-
+    /*
     Visitor v1 = new AST_Visitor();
     //s.accept(v1, 0);
-
-
+    
+    
     System.out.println("\n\nPretty Print the Program");
     Visitor v2 = new PP_Visitor();  // pretty prints the MiniC program
     String src = (String) s.accept(v2, 0);
     System.out.println(src);
-
-
-
+    
+    
+    
     System.out.println("\n\nGenerating Symbol Table");
     SymbolTableVisitor v3 = new SymbolTableVisitor(); // generates a SymbolTable
     SymbolTable st = v3.symbolTable;
     s.accept(v3,"");
     System.out.println(st);
-
-
+    
+    
     System.out.println("\n\nType Checking");
     System.out.println("\n----------------");
     TypeCheckingVisitor v4 = new TypeCheckingVisitor(st); // generates a SymbolTable
     s.accept(v4,"");
     System.out.println("Number of errors: " + v4.num_errors);
+    */
 
 
-    /*
     CodeGen_Visitor v5 = new CodeGen_Visitor();
     String result = (String) s.accept(v5,"");
     System.out.println(result);
-    */
+
 
 
 

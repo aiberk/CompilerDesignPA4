@@ -1,7 +1,7 @@
 import syntaxtree.*;
 import java.util.HashMap;
 
-import org.omg.CORBA.SystemException;
+//import org.omg.CORBA.SystemException;
 
 
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
@@ -38,12 +38,12 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq %rax\n"
-        + label2+":\n"  
+        + label2+":\n";  
     } 
 
     public Object visit(ArrayAssign node, Object data){ 
         String varName = currClass+"_"+currMethod+"_"+node.i.s;
-        String location = varMap.get(varName);
+        String location = (String) varMap.get(varName);
         String e1 = (String)node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
         return "# "+node.accept(ppVisitor, 0) + "\n"
@@ -52,7 +52,7 @@ public class CodeGen_Visitor implements Visitor {
         + "incq %rcx\n"
         + "movq "+location + ", %rax\n"
         + "popq %rdx\n"
-        + "movq %rdx, (%rax, %rcx, $8)\n"
+        + "movq %rdx, (%rax, %rcx, $8)\n";
         
     } 
 
@@ -71,12 +71,11 @@ public class CodeGen_Visitor implements Visitor {
         + "popq %rcx\n"
         + "incq %rcx\n"
         + "popq %rax\n"
-        + "movq "+location + ", %rax\n"
-        + "pushq (%rax, %rcx, $8)\n"
+        + "pushq (%rax, %rcx, $8)\n";
     } 
 
     public Object visit(Assign node, Object data){ 
-       String varName = currClass+"_"+currMethod+"_"+i.s;
+       String varName = currClass+"_"+currMethod+"_"+node.i.s;
        String location = varMap.get(varName);
        if (node.e instanceof NewObject){
             if (((NewObject) node.e).i instanceof ArrayLookup){
@@ -86,7 +85,7 @@ public class CodeGen_Visitor implements Visitor {
                 + "incq %rdi\n"
                 + "shlq $3, %rax\n"
                 + "callq -malloc\n"
-                + "movq %rax, "+location+"\n"
+                + "movq %rax, "+location+"\n";
             }
             return "# New Object assign not implemented";
         }
@@ -146,27 +145,29 @@ public class CodeGen_Visitor implements Visitor {
         currClass = i.s;
 
         
-        node.i.accept(this, dt);
+        node.i.accept(this, data);
+        String v_c = "";
         if (node.v != null){
-            node.v.accept(this, dt);
+            v_c = (String) node.v.accept(this, data);
         }
+        String m_c = "";
         if (node.m != null){
-            node.m.accept(this, dt);
+            m_c = (String) node.m.accept(this, data);
         }
 
-        return "# ClassDecl not implemented\n";
+        return v_c + "\n" + m_c;
     } 
 
     public Object visit(ClassDeclList node, Object data){ 
         // not in MiniC
         ClassDecl c=node.c;
         ClassDeclList clist=node.clist;
-        node.c.accept(this, data);
+        String code = (String) node.c.accept(this, data);
         if (node.clist != null){
-            node.clist.accept(this, data);
+            code += "\n"+ (String) node.clist.accept(this, data);
         }
 
-        return "#ClassDeclList not implemented\n";
+        return code;
     } 
 
     public Object visit(ExpGroup node, Object data){ 
@@ -189,7 +190,7 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(False node, Object data){ 
         return "#"+node.accept(ppVisitor,0)+"\n"
-        + "pushq $0\n"
+        + "pushq $0\n";
     } 
 
     public Object visit(Formal node, Object data){ 
@@ -289,7 +290,7 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(IntegerLiteral node, Object data){ 
         // push the constant into the stack
-        int i=node.i;
+        String i=node.s;
 
         String result = 
         "#"+node.accept(ppVisitor,0)+"\n"
@@ -311,7 +312,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
@@ -321,7 +322,7 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq $1\n"
-        + label2+":\n"  
+        + label2+":\n";
     }
 
     public Object visit(MainClass node, Object data){ 
@@ -339,12 +340,6 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(MethodDecl node, Object data){ 
         // generate code for a function declaration
-        Type t=node.t;
-        Identifier i=node.i;
-        FormalList f=node.f;
-        VarDeclList v=node.v;
-        StatementList s=node.s;
-        Exp e=node.e;
 
         String prologue="";
         String statementCode = "";
@@ -487,7 +482,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
@@ -496,7 +491,7 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq $0\n"
-        + label2+":\n"  
+        + label2+":\n"; 
     }
 
 
@@ -615,7 +610,7 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(True node, Object data){ 
         return "#"+node.accept(ppVisitor,0)+"\n"
-        + "pushq $1\n"
+        + "pushq $1\n";
     }
 
 
@@ -649,7 +644,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(While node, Object data){ 
     
         String e = (String) node.e.accept(this, data);
-        String scode = (String) node.s.accept(this, data);
+        String scode ="";
+        if (node.s != null){
+            scode = (String) node.s.accept(this, data);
+        }
 
 
         String label1 = "L"+labelNum;
@@ -657,7 +655,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
@@ -669,7 +667,7 @@ public class CodeGen_Visitor implements Visitor {
         + "cmpq $1, %rax\n"
         + "je "+ label1 + "\n"
         + "jmp "+label2+"\n"
-        + label2+":\n"
+        + label2+":\n";
     }
     public Object visit(Throw node, Object data){ 
         return "# throw not implemented";
@@ -689,7 +687,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
@@ -699,21 +697,21 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq $1\n"
-        + label2+":\n"
+        + label2+":\n";
     }
     public Object visit(Null node, Object data){ 
         return "#Null not implemented";
     }
 
     public Object visit(NotEquals node, Object data){ 
-        Sring e1 = (String) node.e1.accept(this, data);
+        String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
         String label1 = "L"+labelNum;
         labelNum += 1;
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rax\n"
         + "popq %rdx\n"
@@ -723,7 +721,7 @@ public class CodeGen_Visitor implements Visitor {
         + label1+":\n"  
         + "pushq $1\n"
         + "jmp "+label2+"\n"
-        + label2+":\n"
+        + label2+":\n";
     }
 
     
@@ -746,7 +744,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
@@ -756,13 +754,13 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq $1\n"
-        + label2+":\n"  
+        + label2+":\n"; 
     }
 
     public Object visit(InstanceOf node, Object data){ 
     
-        node.e1.accept(this,indent);
-        node.e2.accept(this,indent);
+        node.e1.accept(this,data);
+        node.e2.accept(this,data);
     
         return "#InstanceOf not implemented";
     }
@@ -778,7 +776,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2 + e3
         + "popq %rax\n"
         + "popq %rdx\n"
@@ -789,7 +787,7 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq %rdx\n"
-        + label2+":\n"
+        + label2+":\n";
     }
     
     public Object visit(GreaterThanOrEqual node, Object data){
@@ -800,7 +798,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
@@ -810,7 +808,7 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq $1\n"
-        + label2+":\n"  
+        + label2+":\n"; 
     }
 
     public Object visit(GreaterThan node, Object data){ 
@@ -821,7 +819,7 @@ public class CodeGen_Visitor implements Visitor {
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
@@ -831,7 +829,7 @@ public class CodeGen_Visitor implements Visitor {
         + "jmp "+label2
         + label1+":\n"  
         + "pushq $1\n"
-        + label2+":\n"
+        + label2+":\n";
     }
 
     public Object visit(Exponent node, Object data){
@@ -843,14 +841,14 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(Equals node, Object data){
-        Sring e1 = (String) node.e1.accept(this, data);
+        String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
         String label1 = "L"+labelNum;
         labelNum += 1;
         String label2 = "L"+labelNum;
         labelNum += 1;
 
-        return "# "+node.accept(ppVisitor, data) + "\n"
+        return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
         + "popq %rax\n"
         + "popq %rdx\n"
@@ -860,7 +858,7 @@ public class CodeGen_Visitor implements Visitor {
         + label1+":\n"  
         + "pushq $1\n"
         + "jmp "+label2+"\n"
-        + label2+":\n"
+        + label2+":\n";
     }
 
     public Object visit(Divide node, Object data){ 
