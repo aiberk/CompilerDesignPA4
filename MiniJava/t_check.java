@@ -4,6 +4,7 @@ class James{
         int n_j;
         int[] my_arr;
         boolean m_result;
+        my_arr = new int[4];
         c = new Joe();
         n_j = c.j * 2 + 1;
         m_result = this.get_bool();

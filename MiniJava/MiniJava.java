@@ -6,10 +6,11 @@ public class MiniJava implements MiniJavaConstants {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("t_check_1.java");
+    FileReader fileReader = new FileReader("t_check.java");
 
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
+
     Visitor v1 = new AST_Visitor();
     //s.accept(v1, 0);
 
@@ -35,6 +36,11 @@ public class MiniJava implements MiniJavaConstants {
     System.out.println("Number of errors: " + v4.num_errors);
 
 
+    /*
+    CodeGen_Visitor v5 = new CodeGen_Visitor();
+    String result = (String) s.accept(v5,"");
+    System.out.println(result);
+    */
 
 
 
@@ -952,23 +958,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_51() {
-    if (jj_3R_52()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_50() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_3R_59()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_49() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_12()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_48() {
     Token xsp;
     xsp = jj_scanpos;
@@ -1353,6 +1342,23 @@ public class MiniJava implements MiniJavaConstants {
   static private boolean jj_3_1() {
     if (jj_3R_9()) return true;
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_51() {
+    if (jj_3R_52()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_50() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_49() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_12()) return true;
     return false;
   }
 

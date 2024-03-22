@@ -20,7 +20,6 @@ public class CodeGen_Visitor implements Visitor {
 
 
     public Object visit(And node, Object data){ 
-        // not in MiniC
     
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
@@ -33,7 +32,7 @@ public class CodeGen_Visitor implements Visitor {
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
-        + "cmpq %rdx, $1\n"
+        + "cmpq $1, %rdx\n"
         + "je "+ label1 + "\n"
         + "pushq $0"
         + "jmp "+label2
@@ -43,14 +42,18 @@ public class CodeGen_Visitor implements Visitor {
     } 
 
     public Object visit(ArrayAssign node, Object data){ 
-        // not in MiniC
-        Identifier i = node.i;
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.i.accept(this,data);
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "# ArrayAssign not implemented\n";
+        String varName = currClass+"_"+currMethod+"_"+node.i.s;
+        String location = varMap.get(varName);
+        String e1 = (String)node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        return "# "+node.accept(ppVisitor, 0) + "\n"
+        + e2 + e1
+        + "popq %rcx\n"
+        + "incq %rcx\n"
+        + "movq "+location + ", %rax\n"
+        + "popq %rdx\n"
+        + "movq %rdx, (%rax, %rcx, $8)\n"
+        
     } 
 
     public Object visit(ArrayLength node, Object data){ 
@@ -61,23 +64,35 @@ public class CodeGen_Visitor implements Visitor {
     } 
 
     public Object visit(ArrayLookup node, Object data){ 
-        // not in MiniC
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "#ArrayLookup not implemented\n"; 
+        String e1 = (String)node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        return "# "+node.accept(ppVisitor, 0) + "\n"
+        + e2 + e1
+        + "popq %rcx\n"
+        + "incq %rcx\n"
+        + "popq %rax\n"
+        + "movq "+location + ", %rax\n"
+        + "pushq (%rax, %rcx, $8)\n"
     } 
 
     public Object visit(Assign node, Object data){ 
-        Identifier i=node.i;
-        Exp e=node.e;
+       String varName = currClass+"_"+currMethod+"_"+i.s;
+       String location = varMap.get(varName);
+       if (node.e instanceof NewObject){
+            if (((NewObject) node.e).i instanceof ArrayLookup){
+                String n = ((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s;
+                return "# "+node.accept(ppVisitor, 0) + "\n"
+                + "movq $"+n+", %rdi\n"
+                + "incq %rdi\n"
+                + "shlq $3, %rax\n"
+                + "callq -malloc\n"
+                + "movq %rax, "+location+"\n"
+            }
+            return "# New Object assign not implemented";
+        }
 
         //node.i.accept(this, data);
         String expCode = (String) node.e.accept(this, data);
-
-        String varName = currClass+"_"+currMethod+"_"+i.s;
-        String location = varMap.get(varName);
 
         String result = 
             
@@ -173,8 +188,8 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(False node, Object data){ 
-        // not implemented yet
-        return "# False not implemented ";
+        return "#"+node.accept(ppVisitor,0)+"\n"
+        + "pushq $0\n"
     } 
 
     public Object visit(Formal node, Object data){ 
@@ -289,13 +304,24 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(LessThan node, Object data){ 
-        // not implemented yet
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
+        String e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
 
-        return "# not implemented yet\n";
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "cmpq %rax, %rdx\n"
+        + "jl "+ label1 + "\n"
+        + "pushq $0"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq $1\n"
+        + label2+":\n"  
     }
 
     public Object visit(MainClass node, Object data){ 
@@ -440,7 +466,6 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(NewObject node, Object data){ 
         // not in MiniC
-        Identifier i=node.i;
         node.i.accept(this, data);
 
         return "# NewObject not implemented\n"; 
@@ -454,10 +479,24 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(Not node, Object data){ 
         // not in MiniC
-        Exp e=node.e;
-        node.e.accept(this, data);
 
-        return "#Not not implemented\n"; 
+
+        String e = (String) node.e.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e
+        + "popq %rax\n"
+        + "cmpq $1, %rax\n"
+        + "je "+ label1 + "\n"
+        + "pushq $1"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq $0\n"
+        + label2+":\n"  
     }
 
 
@@ -575,8 +614,8 @@ public class CodeGen_Visitor implements Visitor {
 
 
     public Object visit(True node, Object data){ 
-        // not in MiniC
-        return "# True not implemented\n"; 
+        return "#"+node.accept(ppVisitor,0)+"\n"
+        + "pushq $1\n"
     }
 
 
@@ -608,13 +647,29 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(While node, Object data){ 
-        // not in MiniC
-        Exp e=node.e;
-        Statement s=node.s;
-        node.e.accept(this, data);
-        node.s.accept(this, data);
+    
+        String e = (String) node.e.accept(this, data);
+        String scode = (String) node.s.accept(this, data);
 
-        return "# while not implemented\n"; 
+
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e
+        + "popq %rax\n"
+        + "cmpq $1, %rax\n"
+        + "je "+ label1 + "\n"
+        + "jmp "+label2
+        + label1+":\n"  
+        + e
+        + "popq %rax\n"
+        + "cmpq $1, %rax\n"
+        + "je "+ label1 + "\n"
+        + "jmp "+label2+"\n"
+        + label2+":\n"
     }
     public Object visit(Throw node, Object data){ 
         return "# throw not implemented";
@@ -627,24 +682,48 @@ public class CodeGen_Visitor implements Visitor {
         return "# Return not implemented";
     }
     public Object visit(Or node, Object data){
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        //String t1 = (String) node.e1.accept(this, data);
-        //String t2 = (String) node.e2.accept(this, data);
-        return "#Or not implemented";
+        String e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "cmpq $1, %rdx\n"
+        + "je "+ label1 + "\n"
+        + "pushq %rax"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq $1\n"
+        + label2+":\n"
     }
     public Object visit(Null node, Object data){ 
         return "#Null not implemented";
     }
 
     public Object visit(NotEquals node, Object data){ 
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        /*
-        String t1 = (String) node.e1.accept(this, data);
-        String t2 = (String) node.e2.accept(this, data);
-        */
-        return "#NotEquals not implemented";
+        Sring e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rax\n"
+        + "popq %rdx\n"
+        + "cmpq %rdx, %rax\n"
+        + "jne "+ label1 + "\n"
+        + "pushq $0\n"
+        + label1+":\n"  
+        + "pushq $1\n"
+        + "jmp "+label2+"\n"
+        + label2+":\n"
     }
 
     
@@ -660,13 +739,24 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(LessThanOrEqual node, Object data){ 
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        /*
-        String t1 = (String) node.e1.accept(this, data);
-        String t2 = (String) node.e2.accept(this, data);
-        */
-        return "#LessThanOrEqual not implemented";
+        String e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "cmpq %rax, %rdx\n"
+        + "jle "+ label1 + "\n"
+        + "pushq $0"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq $1\n"
+        + label2+":\n"  
     }
 
     public Object visit(InstanceOf node, Object data){ 
@@ -679,26 +769,69 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(Inline node, Object data){ 
         //conditional ? if_true : if_false
-        node.conditional.accept(this, data);
-        node.conditional.accept(this, data);
-        node.conditional.accept(this, data);
-        return "#Inline not implemented";
+        String e1 = (String) node.conditional.accept(this, data);
+        String e2 = (String) node.if_true.accept(this, data);
+        String e3 = (String) node.if_false.accept(this, data);
+
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2 + e3
+        + "popq %rax\n"
+        + "popq %rdx\n"
+        + "popq %rbx\n"
+        + "cmpq $1, %rbx\n"
+        + "je "+ label1 + "\n"
+        + "pushq %rax"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq %rdx\n"
+        + label2+":\n"
     }
     
     public Object visit(GreaterThanOrEqual node, Object data){
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "#GreaterThanOrEqual not implemented";
+        String e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "cmpq %rax, %rdx\n"
+        + "jge "+ label1 + "\n"
+        + "pushq $0"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq $1\n"
+        + label2+":\n"  
     }
 
     public Object visit(GreaterThan node, Object data){ 
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "#Greaterthan not implemented";
+        String e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rdx\n"
+        + "popq %rax\n"
+        + "cmpq $1, %rdx\n"
+        + "jg "+ label1 + "\n"
+        + "pushq $0"
+        + "jmp "+label2
+        + label1+":\n"  
+        + "pushq $1\n"
+        + label2+":\n"
     }
 
     public Object visit(Exponent node, Object data){
@@ -710,19 +843,43 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(Equals node, Object data){
-        Exp e1=node.e1;
-        Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "#Equals not implemented";
+        Sring e1 = (String) node.e1.accept(this, data);
+        String e2 = (String) node.e2.accept(this, data);
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+
+        return "# "+node.accept(ppVisitor, data) + "\n"
+        + e1 + e2
+        + "popq %rax\n"
+        + "popq %rdx\n"
+        + "cmpq %rdx, %rax\n"
+        + "je "+ label1 + "\n"
+        + "pushq $0\n"
+        + label1+":\n"  
+        + "pushq $1\n"
+        + "jmp "+label2+"\n"
+        + label2+":\n"
     }
 
     public Object visit(Divide node, Object data){ 
         Exp e1=node.e1;
         Exp e2=node.e2;
-        node.e1.accept(this, data);
-        node.e2.accept(this, data);
-        return "#Divide not implemented";
+        String e1Code = (String) node.e1.accept(this, data);
+        String e2Code = (String) node.e2.accept(this, data);
+
+        String timesCode = 
+        
+        e1Code
+        + e2Code
+        + "# times:"+node.accept(ppVisitor,0)+"\n"
+        +   "popq %rdx\n"
+        +   "popq %rax\n"
+        +   "idivq %rdx, %rax\n"
+        +   "pushq %rax\n";
+
+        return timesCode; 
     }
 
     public Object visit(Continue node, Object data){

@@ -90,11 +90,17 @@ public class TypeCheckingVisitor implements Visitor {
         }
 
         return t.replaceAll("\\[\\]$", "");
-    } 
-
+    }
     public Object visit(Assign node, Object data){ 
-        Identifier i=node.i;
-        Exp e=node.e;
+    
+        if (node.e instanceof NewObject){
+            if (((NewObject) node.e).i instanceof ArrayLookup){
+                System.out.println("New array creation");
+                String n = ((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s;
+                System.out.println(n);
+            }
+            return "void";
+        }
         String t1 = (String) node.i.accept(this, data);
         String t2 = (String) node.e.accept(this, data);
         if (!t1.equals(t2)) {
