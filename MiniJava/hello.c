@@ -1,9 +1,10 @@
 #include <stdio.h>
 
-int main(void)
-{   int x = 10;
-    int y = 13;
-    int z = x*y;
-    printf("z=%d\n",z);
-    return z;
+int main(void){
+    int myNumbers[4];
+
+    // Add elements
+    myNumbers[0] = 25;
+    
+    return myNumbers[0];
 }

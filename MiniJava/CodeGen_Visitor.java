@@ -79,9 +79,9 @@ public class CodeGen_Visitor implements Visitor {
        String location = varMap.get(varName);
        if (node.e instanceof NewObject){
             if (((NewObject) node.e).i instanceof ArrayLookup){
-                String n = ((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s;
+                int n = Integer.parseInt(((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s);
                 return "# "+node.accept(ppVisitor, 0) + "\n"
-                + "movq $"+n+", %rdi\n"
+                + "movq $"+8*(n+1)+", %rdi\n"
                 + "incq %rdi\n"
                 + "shlq $3, %rax\n"
                 + "callq -malloc\n"
@@ -117,12 +117,20 @@ public class CodeGen_Visitor implements Visitor {
         return "# no code for BooleanType\n";
     } 
 
-    public Object visit(Call node, Object data){ 
-        // not implemented yet ...
-
+    public Object visit(Call node, Object data){         
         Exp e1 = node.e1;
         Identifier i = node.i;
         ExpList e2=node.e2;
+        if (e1.accept(ppVisitor,0).equals("System.out.println")){
+            if (e2.elist != null){
+                return "# sys out not supported for more than one argument, skipping...";
+            }
+            return (String) e2.e.accept(this, data)
+            + "# " + node.accept(ppVisitor,0) + "\n"
+            + "popq %rdi\n"
+            + "callq _print\n";
+
+        }
         if (node.e1 != null){
             node.e1.accept(this, data);
         }
@@ -467,8 +475,7 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(ExpStatement node, Object data){ 
-        node.e.accept(this, data);
-        return "#ExpStatement not implemented"; 
+        return (String) node.e.accept(this, data);
     }
 
 
@@ -522,7 +529,7 @@ public class CodeGen_Visitor implements Visitor {
         String result = 
         
             expCode
-        + "# "+node.accept(ppVisitor, 0)
+        + "# "+node.accept(ppVisitor, 0) + "\n"
         +   "popq %rdi\n"
         +   "callq _print\n";
 
@@ -661,7 +668,9 @@ public class CodeGen_Visitor implements Visitor {
         + "cmpq $1, %rax\n"
         + "je "+ label1 + "\n"
         + "jmp "+label2
-        + label1+":\n"  
+        + label1+":\n"
+        + "# body of while loop"
+        + scode 
         + e
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
@@ -896,7 +905,7 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(Attribute node, Object data){ 
         String attr = node.i.s;
         node.e.accept(this, data);
-        return "# Attribute not implemented";
+        return "# Attribute not implemented \n";
     }
     public Object visit(InPlaceOp node, Object data){ 
         //node.i++ or node.i--
