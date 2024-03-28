@@ -1,4 +1,4 @@
-def fib(n):
+def fib(n:int) -> int:
     if n<2:        
             result = 1
         
@@ -8,7 +8,7 @@ def fib(n):
 
     return result
 
-def fibs(n):
+def fibs(n:int) -> int:
     b = (0<0)
     if 0<n:        
             s = fibs(n - 1)
@@ -28,7 +28,7 @@ def fibs(n):
 
     return result2
 
-def main(x):
+def main(x:int) -> int:
     print(fibs(40))
 
     return (1)
