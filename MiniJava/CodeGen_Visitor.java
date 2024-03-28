@@ -82,11 +82,11 @@ public class CodeGen_Visitor implements Visitor {
                 int n = Integer.parseInt(((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s);
                 return "# "+node.accept(ppVisitor, 0) + "\n"
                 + "movq $"+8*(n+1)+", %rdi\n"
-                + "incq %rdi\n"
-                + "shlq $3, %rax\n"
                 + "callq -malloc\n"
                 + "movq %rax, "+location+"\n";
             }
+
+
             return "# New Object assign not implemented";
         }
 
