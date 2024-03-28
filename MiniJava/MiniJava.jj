@@ -54,8 +54,10 @@ public class MiniJava {
     
     CodeGen_Visitor v5 = new CodeGen_Visitor();
     String result = (String) s.accept(v5,"");
-    System.out.println(result);
-    
+    PrintWriter out = new PrintWriter("test_asm.s");
+
+    out.println(result);
+    out.close();
 
 
 

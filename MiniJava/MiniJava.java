@@ -39,8 +39,10 @@ public class MiniJava implements MiniJavaConstants {
 
     CodeGen_Visitor v5 = new CodeGen_Visitor();
     String result = (String) s.accept(v5,"");
-    System.out.println(result);
+    PrintWriter out = new PrintWriter("test_asm.s");
 
+    out.println(result);
+    out.close();
 
 
 
@@ -958,39 +960,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_48() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_49()) {
-    jj_scanpos = xsp;
-    if (jj_3R_50()) {
-    jj_scanpos = xsp;
-    if (jj_3R_51()) return true;
-    }
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_24() {
-    if (jj_scan_token(EQUALS)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_21() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_24()) {
-    jj_scanpos = xsp;
-    if (jj_3R_25()) return true;
-    }
-    return false;
-  }
-
-  static private boolean jj_3R_32() {
-    if (jj_scan_token(INSTANCEOF)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_20() {
     if (jj_3R_22()) return true;
     Token xsp;
@@ -1359,6 +1328,39 @@ public class MiniJava implements MiniJavaConstants {
   static private boolean jj_3R_49() {
     if (jj_scan_token(LPAREN)) return true;
     if (jj_3R_12()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_48() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_49()) {
+    jj_scanpos = xsp;
+    if (jj_3R_50()) {
+    jj_scanpos = xsp;
+    if (jj_3R_51()) return true;
+    }
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_24() {
+    if (jj_scan_token(EQUALS)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_21() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_24()) {
+    jj_scanpos = xsp;
+    if (jj_3R_25()) return true;
+    }
+    return false;
+  }
+
+  static private boolean jj_3R_32() {
+    if (jj_scan_token(INSTANCEOF)) return true;
     return false;
   }
 

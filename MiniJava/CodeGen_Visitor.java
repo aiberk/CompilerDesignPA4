@@ -82,7 +82,7 @@ public class CodeGen_Visitor implements Visitor {
                 int n = Integer.parseInt(((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s);
                 return "# "+node.accept(ppVisitor, 0) + "\n"
                 + "movq $"+8*(n+1)+", %rdi\n"
-                + "callq -malloc\n"
+                + "callq _malloc\n"
                 + "movq %rax, "+location+"\n";
             }
 
@@ -128,7 +128,7 @@ public class CodeGen_Visitor implements Visitor {
             return (String) e2.e.accept(this, data)
             + "# " + node.accept(ppVisitor,0) + "\n"
             + "popq %rdi\n"
-            + "callq _print\n";
+            + "callq _printf\n";
 
         }
         if (node.e1 != null){
