@@ -14,9 +14,12 @@ public class CodeGen_Visitor implements Visitor {
     private String currClass = "";
     private String currMethod = "";
     private int labelNum = 0;
-    private int stackOffset = 0;
+    private int stackOffset = -24;
     private int formalOffset = 0;
+    private int numFormals = 0;
     private Visitor ppVisitor = new PP_Visitor();
+    private String[] regFormals= //registers for first six formals...
+        {"%rdi","%rsi","%rdx","%rcx","%r8","%r9"}; 
 
 
     public Object visit(And node, Object data){ 
@@ -119,12 +122,24 @@ public class CodeGen_Visitor implements Visitor {
         // no code generated
         return "# no code for BooleanType\n";
     } 
+    public int getNumArgs(ExpList e){
+        /*
+         * for the ith argument to the call, store it in
+         * regFormals[i] starting with i=0
+         */
+        if (e==null){
+            return 0;
+        } else {
+            return 1 + getNumArgs(e.elist);
+        }
+    }
 
     public Object visit(Call node, Object data){         
         Exp e1 = node.e1;
         Identifier i = node.i;
         ExpList e2=node.e2;
-        if (e1.accept(ppVisitor,0).equals("System.out.println")){
+        String f_name = (String) e1.accept(ppVisitor,0);
+        if (f_name.equals("System.out.println")){
             if (e2.elist != null){
                 return "# sys out not supported for more than one argument, skipping...";
             }
@@ -135,14 +150,31 @@ public class CodeGen_Visitor implements Visitor {
             + "callq _printf\n";
 
         }
-        if (node.e1 != null){
-            node.e1.accept(this, data);
-        }
+        int numArgs = getNumArgs(e2);
+
+        String evalArgsCode = "";
+        String storeArgsCode = "";
+        String makeCall = "";
+
         if (node.e2 != null){
-            node.e2.accept(this, data);
+            evalArgsCode = (String) node.e2.accept(this, data);
         }
 
-        return "# Call not implemented\n";
+        for (int j =0; j<numArgs; j++){
+            storeArgsCode += 
+              "popq "+regFormals[j]+"\n";
+        }
+
+        makeCall = 
+              "# calling "+f_name+"\n"
+            + "callq _"+f_name+"\n"  // using function name as label with "_" prefix
+            + "pushq %rax\n"; // push the result of the function on the stack
+
+        return 
+            evalArgsCode +
+            storeArgsCode +
+            makeCall;
+
     } 
 
     public Object visit(ClassDecl node, Object data){ 
@@ -193,11 +225,13 @@ public class CodeGen_Visitor implements Visitor {
         // not implemented yet, only need for Call
         Exp e=node.e;
         ExpList elist=node.elist;
-        node.e.accept(this, data);
+        String result="";
+
+        result = (String) node.e.accept(this, data);
         if (node.elist != null){
-            node.elist.accept(this, data);
+            result += (String) node.elist.accept(this, data);
         }
-        return "#ExpList not implemented \n"; 
+        return result;  
     }
 
     public Object visit(False node, Object data){ 
@@ -208,16 +242,37 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(Formal node, Object data){ 
         // find location of formal in stack
         Identifier i=node.i;
+        Identifier t=node.t;
+
+
+        String varName = currClass+"_"+currMethod+"_"+i.s;
+        String location;
 
         formalOffset += 8;
-        String varName = currClass+"_"+currMethod+"_"+node.i.s;
-        String location = formalOffset + "(%rbp)";
+        location = formalOffset + "(%rbp)";
+
+        // if (numFormals < 6){
+        //     stackOffset -= 8;
+        //     location = (stackOffset) + "(%rbp)";
+        //     /*
+        //      * up to the first six formals are passed in registers
+        //      * and we will the copy them to the stack frame as locals
+        //      */
+        // } else {
+        //     location = (2+numFormals-6)*8 + "(%rbp)";
+        //     /*
+        //      * formals from 7 on are store in offsets 16,24,32, ... above rbp
+        //      */
+        // }
+        // numFormals += 1;
+        // formalOffset += 8;
+        
         varMap.put(varName, location);
 
         //node.i.accept(this, data);
         //node.t.accept(this, data);
 
-        return "# " + varName+"->"+location+"\n"; 
+        return "# " + varName+"->"+location+"\n";  
     }
 
     public Object visit(FormalList node, Object data){ 
@@ -372,44 +427,125 @@ public class CodeGen_Visitor implements Visitor {
 
         return "# not implemented\n"; 
     }
+    public int getFormalsLocations(FormalList fs){
+        /*
+         * getFormals returns the number of formals in the FormalList
+         * and uses varMap to assign a stack frame location to each formal variable
+         */
+        if (fs==null){
+            return 0;
+        } else {
+            int n = getFormalsLocations(fs.flist);
+            String varName = currClass+"_"+currMethod+"_"+fs.f.i.s;
+            int offset = 8*(n+1);
+            String location = "-"+offset+"(%rbp)";
+            varMap.put(varName,location);
+            return n+1;
+        }
+    }
+
+    public String copyFormals(FormalList fs,int n){
+        /*
+         * fs.f is the last Formal in the list and
+         * fs.flist is the list of earlier formals
+         * n is the number of formals in the FormalList
+         * so regFormals[n-1] is the register it is stored in
+         */
+        if (fs==null){
+            return "";
+        } else {
+            String code = copyFormals(fs.flist,n-1);
+            String formalName = currClass+"_"+currMethod+"_"+fs.f.i.s;
+            String location = varMap.get(formalName);
+            String register = regFormals[n-1];
+            code += 
+                "movq "+register+", "+location
+                     +"  # formal "+formalName+"->"+location+"\n";
+            return code;
+        }
+    }
+
+    public int getLocalsLocations(VarDeclList vs,int numFormals){
+        /*
+         * getLocals returns the number of local variables s in the VarList
+         * and uses varMap to assign a stack frame location to each local variable
+         */
+        if (vs==null){
+            return 0;
+        } else {
+            int n = getLocalsLocations(vs.vlist,numFormals);
+            String varName = currClass+"_"+currMethod+"_"+vs.v.i.s;
+            int offset = 8*(n+1+numFormals);
+            String location = "-"+offset+"(%rbp)";
+            varMap.put(varName,location);
+            return n+1;
+        }
+    }
+
+    public String initializeLocals(VarDeclList vs){
+        /*
+         * look up location of each local variable
+         * and store zero in that location
+         */
+        if (vs==null){
+            return "\n";
+        }else {
+            String varName = currClass+"_"+currMethod+"_"+vs.v.i.s;
+            String location = varMap.get(varName);
+            String initCode = initializeLocals(vs.vlist);
+            initCode +=
+               "movq $0, "+location+"  # "+varName+"->"+location+"\n";
+            return initCode;
+        }
+    }
 
     public Object visit(MethodDecl node, Object data){ 
         // generate code for a function declaration
 
-        String prologue="";
+        String prologueCode="";
         String statementCode = "";
         String expressionCode = "";
-        String epilogue = "";
+        String epilogueCode = "";
 
         String formals="# formals\n";
         String locals="#locals\n";
 
+        int numFormals = getFormalsLocations(node.args);
+        int numLocals = getLocalsLocations(node.vars, numFormals);
+        // create label for this method and store in labelMap
 
+        String fullMethodName = "_"+node.name.s;
+        /*
+        String fullMethodName = "";
+        if ((currClass+"_"+node.name.s).equals("James_main")){
+            fullMethodName = "_main";
+        }
+        else{
+            fullMethodName = currClass+"_"+node.name.s;
+        }
+        */
+        String theLabel = fullMethodName;
+        labelMap.put(fullMethodName, theLabel);
 
-        formalOffset = 8;
-        String theLabel = node.name.s ; //labelMap.get(currClass) + i.s;
-        labelMap.put(currClass + node.name.s, theLabel);
+        stackOffset = -8*(numFormals+numLocals); // reserve space for formals/locals
 
-        currMethod = node.name.s;  // set "global variable"
-        stackOffset = 0;
+        //node.t.accept(this, data);
+        //node.i.accept(this, data);
+
+        // if (node.f != null){
+        //     node.f.accept(this, data);
+        // }
+
+        String copyFormalsCode = 
+            copyFormals(node.args,numFormals);
+        
+        String initializeLocalsCode =
+            initializeLocals(node.vars);
 
         
 
         //node.t.accept(this, data);
         //node.i.accept(this, data);
-
-        // assign locations for formals
-        if (node.args != null){
-            formals += (String) node.args.accept(this, data);
-        }
-
-        
-
-        // assign locations for local variables
-        if (node.vars != null){
-            locals += (String) node.vars.accept(this, data);
-        }
-
         if (node.statements != null){
             statementCode = (String) node.statements.accept(this, data);
         }
@@ -418,41 +554,38 @@ public class CodeGen_Visitor implements Visitor {
             expressionCode = (String) node.returns.accept(this, data);
         }
 
-        int stackChange = - stackOffset;
+        int stackChange = (- stackOffset);
+        stackChange = ((int)Math.ceil(stackChange/16.0))*16;
 
-        prologue = 
-        ".section	__TEXT,__text,regular,pure_instructions\n"
-        + ".build_version macos, 13, 0	sdk_version 13, 0\n"
-        +".globl "+"_"+theLabel+"\n"
-        + ".p2align	4, 0x90\n"
-        +"_"+theLabel+":\n"
-        +formals
+        
+          prologueCode = 
+         "\n\n\n"
+        +".globl "+theLabel+"\n"
+        + theLabel+":\n"   
         + "# prologue\n"
         + "pushq %rbp\n"
         + "movq %rsp, %rbp\n"
-        + locals
-        + "#make space for locals on stack\n"
-        + "subq $"+stackChange+", %rsp\n";
+        + "# make space for locals on stack, must be multiple of 16\n"
+        + "subq $"+(stackChange)+", %rsp\n"
+        + "# copy formals in registers to stack frame\n" 
+        + copyFormalsCode
+        + "# initialize local variables to zero\n"
+        + initializeLocalsCode;
+        
 
-        epilogue =
+        epilogueCode =
         "# epilogue\n"
         +   "popq %rax\n"
-        +   "addq $"+stackChange+", %rsp\n"
-        +   "movq %rbp, %rsp\n"
+        +   "addq $"+(stackChange)+", %rsp\n"
         +   "popq %rbp\n"
-        // maybe insert code her to print out the return value
-        +   "retq\n"
-        + "L_.str:\n"
-	    + ".asciz	\"%d\\n\"\n"
-
-        + ".subsections_via_symbols\n";
+        +   "retq\n";
 
         return 
-          prologue 
+          prologueCode 
           + statementCode 
           +"# calculate return value\n"
           + expressionCode
-          +epilogue; 
+          +epilogueCode; 
     }
 
 

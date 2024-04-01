@@ -64,8 +64,12 @@ public class MiniJava {
     CodeGen_Visitor v5 = new CodeGen_Visitor();
     String result = (String) s.accept(v5,"");
     PrintWriter out = new PrintWriter("test_asm.s");
-
+    out.println(".section	__TEXT,__text,regular,pure_instructions\n.build_version macos, 13, 0	sdk_version 13, 0\n");
     out.println(result);
+    out.println("\nL_.str:\n"
+	    + ".asciz	\"%d\\n\"\n"
+
+        + ".subsections_via_symbols\n");
     out.close();
 
 

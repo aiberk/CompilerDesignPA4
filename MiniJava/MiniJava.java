@@ -40,8 +40,12 @@ public class MiniJava implements MiniJavaConstants {
     CodeGen_Visitor v5 = new CodeGen_Visitor();
     String result = (String) s.accept(v5,"");
     PrintWriter out = new PrintWriter("test_asm.s");
-
+    out.println(".section\u0009__TEXT,__text,regular,pure_instructions\n.build_version macos, 13, 0\u0009sdk_version 13, 0\n");
     out.println(result);
+    out.println("\nL_.str:\n"
+            + ".asciz\u0009\"%d\\n\"\n"
+
+        + ".subsections_via_symbols\n");
     out.close();
 
 
@@ -960,11 +964,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_19() {
-    if (jj_scan_token(AND)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_46() {
     if (jj_3R_47()) return true;
     return false;
@@ -1361,6 +1360,11 @@ public class MiniJava implements MiniJavaConstants {
 
   static private boolean jj_3R_47() {
     if (jj_3R_48()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_19() {
+    if (jj_scan_token(AND)) return true;
     return false;
   }
 

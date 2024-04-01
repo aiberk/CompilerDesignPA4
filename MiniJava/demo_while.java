@@ -1,20 +1,25 @@
 class James{
-    public int main(){
+    public int fib(int n){
         int i;
         int a;
         int b;
-        int n;
         int temp;
         a=0;
         b=1;
         i=1;
-        n = 20;
         while (i<n) {
             temp = a+b;
             a = b;
             b = temp;
-            System.out.println(b);
             i=i+1;
         }
+        return b;
     }
+    public int main(){
+        int j;
+        j = fib(100);
+        System.out.println(j);
+        return j;
+    }
+
 }
