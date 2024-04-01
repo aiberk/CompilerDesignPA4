@@ -691,10 +691,11 @@ public class CodeGen_Visitor implements Visitor {
 
     
         String label1 = "L"+this.labelNum;
-        this.this.labelNum += 1;
+        this.labelNum += 1;
         String label2 = "L"+this.labelNum;
-        this.this.labelNum += 1;
+        this.labelNum += 1;
 
+        String e1 = (String) node.e.accept(this, data);
         return "# while loop set up\n"
         + e
         + "popq %rax\n"
@@ -704,7 +705,7 @@ public class CodeGen_Visitor implements Visitor {
         + label1+":\n"
         + "# body of while loop\n"
         + scode +"\n"
-        + e+"\n"
+        + e1+"\n"
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
         + "je "+ label1 + "\n"
@@ -725,9 +726,9 @@ public class CodeGen_Visitor implements Visitor {
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
         String label1 = "L"+this.labelNum;
-        this.this.labelNum += 1;
+        this.labelNum += 1;
         String label2 = "L"+this.labelNum;
-        this.this.labelNum += 1;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2

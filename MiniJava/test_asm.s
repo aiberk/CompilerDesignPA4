@@ -21,6 +21,7 @@ popq %rax
 movq %rax, -8(%rbp)
 
 # while loop set up
+# a < 10 || a * 2 == 20
 # a < 10
 #a
 pushq -8(%rbp) #  a
@@ -35,11 +36,42 @@ jmp L2
 L1:
 pushq $1
 L2:
+# a * 2 == 20
+#a
+pushq -8(%rbp) #  a
+#2
+pushq $2
+# multiply:a * 2
+popq %rdx
 popq %rax
-cmpq $1, %rax
+imulq %rdx, %rax
+pushq %rax
+#20
+pushq $20
+popq %rax
+popq %rdx
+cmpq %rdx, %rax
 je L3
+pushq $0
 jmp L4
 L3:
+pushq $1
+jmp L4
+L4:
+popq %rdx
+popq %rax
+cmpq $1, %rdx
+je L5
+pushq %rax
+jmp L6
+L5:
+pushq $1
+L6:
+popq %rax
+cmpq $1, %rax
+je L7
+jmp L8
+L7:
 # body of while loop
 
 #a
@@ -63,6 +95,7 @@ pushq %rax
 popq %rax
 movq %rax, -8(%rbp)
 
+# a < 10 || a * 2 == 20
 # a < 10
 #a
 pushq -8(%rbp) #  a
@@ -71,18 +104,49 @@ pushq $10
 popq %rdx
 popq %rax
 cmpq %rdx, %rax
-jl L1
+jl L9
 pushq $0
-jmp L2
-L1:
+jmp L10
+L9:
 pushq $1
-L2:
+L10:
+# a * 2 == 20
+#a
+pushq -8(%rbp) #  a
+#2
+pushq $2
+# multiply:a * 2
+popq %rdx
+popq %rax
+imulq %rdx, %rax
+pushq %rax
+#20
+pushq $20
+popq %rax
+popq %rdx
+cmpq %rdx, %rax
+je L11
+pushq $0
+jmp L12
+L11:
+pushq $1
+jmp L12
+L12:
+popq %rdx
+popq %rax
+cmpq $1, %rdx
+je L13
+pushq %rax
+jmp L14
+L13:
+pushq $1
+L14:
 
 popq %rax
 cmpq $1, %rax
-je L3
-jmp L4
-L4:
+je L7
+jmp L8
+L8:
 # calculate return value
 # epilogue
 popq %rax
