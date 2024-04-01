@@ -6,7 +6,7 @@ public class MiniJava implements MiniJavaConstants {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("t_check.java");
+    FileReader fileReader = new FileReader("demo_array.java");
 
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();
@@ -960,11 +960,6 @@ public class MiniJava implements MiniJavaConstants {
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_47() {
-    if (jj_3R_48()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_19() {
     if (jj_scan_token(AND)) return true;
     return false;
@@ -1361,6 +1356,11 @@ public class MiniJava implements MiniJavaConstants {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_23()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_47() {
+    if (jj_3R_48()) return true;
     return false;
   }
 

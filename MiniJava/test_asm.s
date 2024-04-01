@@ -9,28 +9,28 @@ _main:
 pushq %rbp
 movq %rsp, %rbp
 #locals
-# James_main_c->-8(%rbp)
-# James_main_k->-16(%rbp)
-# James_main_b->-24(%rbp)
-# James_main_a->-32(%rbp)
+# James_main_b->-8(%rbp)
+# James_main_a->-16(%rbp)
+# James_main_t->-24(%rbp)
+# James_main_s->-32(%rbp)
 #make space for locals on stack
 subq $32, %rsp
 
-#10
-pushq $10
-#a = 10;
+#0
+pushq $0
+#a = 0;
 
 popq %rax
-movq %rax, -32(%rbp)
+movq %rax, -16(%rbp)
 
-#20
-pushq $20
-#b = 20;
+#3
+pushq $3
+#t = 3;
 
 popq %rax
 movq %rax, -24(%rbp)
 
-# c = new int[10];
+# b = new int[10];
 
 movq $88, %rdi
 callq _malloc
@@ -39,51 +39,93 @@ movq $0, %rcx
 movq $10, %rdx
 movq %rdx, (%rax, %rcx, 8)
 
-# c[3] = a + b;
+# b[0] = 100;
 
-#a
-pushq -32(%rbp) #  a
-#b
-pushq -24(%rbp) #  b
-# plus:a + b
-popq %rdx
-popq %rax
-addq %rdx, %rax
-pushq %rax
-#3
-pushq $3
+#100
+pushq $100
+#0
+pushq $0
 popq %rcx
 incq %rcx
 movq -8(%rbp), %rax
 popq %rdx
 movq %rdx, (%rax, %rcx, 8)
 
-# c[3]
-#c
-pushq -8(%rbp) #  c
-#3
-pushq $3
+# b[t] = 200;
+
+#200
+pushq $200
+#t
+pushq -24(%rbp) #  t
+popq %rcx
+incq %rcx
+movq -8(%rbp), %rax
+popq %rdx
+movq %rdx, (%rax, %rcx, 8)
+
+# b[t]
+#b
+pushq -8(%rbp) #  b
+#t
+pushq -24(%rbp) #  t
 popq %rcx
 incq %rcx
 popq %rax
 pushq (%rax, %rcx, 8)
-#k = c[3];
+#a = b[t];
 
 popq %rax
 movq %rax, -16(%rbp)
 
-# c.length
-#c
-pushq -8(%rbp) #  c
+#a
+pushq -16(%rbp) #  a
+# System.out.println(a)
+popq %rsi
+leaq	L_.str(%rip), %rdi
+callq _printf
+
+# b[0]
+#b
+pushq -8(%rbp) #  b
+#0
+pushq $0
+popq %rcx
+incq %rcx
+popq %rax
+pushq (%rax, %rcx, 8)
+# b[t]
+#b
+pushq -8(%rbp) #  b
+#t
+pushq -24(%rbp) #  t
+popq %rcx
+incq %rcx
+popq %rax
+pushq (%rax, %rcx, 8)
+# plus:b[0] + b[t]
+popq %rdx
+popq %rax
+addq %rdx, %rax
+pushq %rax
+# System.out.println(b[0] + b[t])
+popq %rsi
+leaq	L_.str(%rip), %rdi
+callq _printf
+
+# b.length
+#b
+pushq -8(%rbp) #  b
 
 popq %rax
 movq $0, %rcx
 pushq (%rax,%rcx, 8)
-# System.out.println(c.length)
+# System.out.println(b.length)
 popq %rsi
 leaq	L_.str(%rip), %rdi
 callq _printf
 # calculate return value
+#a
+pushq -16(%rbp) #  a
 # epilogue
 popq %rax
 addq $32, %rsp
