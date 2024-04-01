@@ -9,6 +9,6 @@ class James{
         c = new int[10];
         c[3] = a + b;
         k = c[3];
-        System.out.println(k);
+        System.out.println(c.length);
     }
 }

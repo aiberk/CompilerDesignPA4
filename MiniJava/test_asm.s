@@ -35,6 +35,9 @@ movq %rax, -24(%rbp)
 movq $88, %rdi
 callq _malloc
 movq %rax, -8(%rbp)
+movq $0, %rcx
+movq $10, %rdx
+movq %rdx, (%rax, %rcx, 8)
 
 # c[3] = a + b;
 
@@ -69,9 +72,14 @@ pushq (%rax, %rcx, 8)
 popq %rax
 movq %rax, -16(%rbp)
 
-#k
-pushq -16(%rbp) #  k
-# System.out.println(k)
+# c.length
+#c
+pushq -8(%rbp) #  c
+
+popq %rax
+movq $0, %rcx
+pushq (%rax,%rcx, 8)
+# System.out.println(c.length)
 popq %rsi
 leaq	L_.str(%rip), %rdi
 callq _printf

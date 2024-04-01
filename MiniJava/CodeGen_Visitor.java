@@ -83,7 +83,10 @@ public class CodeGen_Visitor implements Visitor {
                 return "# "+node.accept(ppVisitor, 0) + "\n"
                 + "movq $"+8*(n+1)+", %rdi\n"
                 + "callq _malloc\n"
-                + "movq %rax, "+location+"\n";
+                + "movq %rax, "+location+"\n"
+                + "movq $0, %rcx\n"
+                + "movq $"+n+", %rdx\n"
+                + "movq %rdx, (%rax, %rcx, 8)\n";
             }
 
 
@@ -914,7 +917,8 @@ public class CodeGen_Visitor implements Visitor {
             return "# " + node.accept(ppVisitor,0)+"\n"
             + (String) node.e.accept(this, data) + "\n"
             + "popq %rax\n"
-            + "pushq (%rax,$rcx,)\n";
+            + "movq $0, %rcx\n"
+            + "pushq (%rax,%rcx, 8)\n";
         }
         return "# Attribute not implemented \n";
     }
