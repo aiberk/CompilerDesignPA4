@@ -1,10 +1,20 @@
 class James{
     public int main(){
+        int i;
         int a;
-        a = 1;
-        while (a < 10 || a*2 == 20){
-            System.out.println(a);
-            a = a + 1;
+        int b;
+        int n;
+        int temp;
+        a=0;
+        b=1;
+        i=1;
+        n = 20;
+        while (i<n) {
+            temp = a+b;
+            a = b;
+            b = temp;
+            System.out.println(b);
+            i=i+1;
         }
     }
 }

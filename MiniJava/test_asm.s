@@ -9,24 +9,48 @@ _main:
 pushq %rbp
 movq %rsp, %rbp
 #locals
-# James_main_a->-8(%rbp)
+# James_main_temp->-8(%rbp)
+# James_main_n->-16(%rbp)
+# James_main_b->-24(%rbp)
+# James_main_a->-32(%rbp)
+# James_main_i->-40(%rbp)
 #make space for locals on stack
-subq $8, %rsp
+subq $40, %rsp
+
+#0
+pushq $0
+#a = 0;
+
+popq %rax
+movq %rax, -32(%rbp)
 
 #1
 pushq $1
-#a = 1;
+#b = 1;
 
 popq %rax
-movq %rax, -8(%rbp)
+movq %rax, -24(%rbp)
+
+#1
+pushq $1
+#i = 1;
+
+popq %rax
+movq %rax, -40(%rbp)
+
+#20
+pushq $20
+#n = 20;
+
+popq %rax
+movq %rax, -16(%rbp)
 
 # while loop set up
-# a < 10 || a * 2 == 20
-# a < 10
-#a
-pushq -8(%rbp) #  a
-#10
-pushq $10
+# i < n
+#i
+pushq -40(%rbp) #  i
+#n
+pushq -16(%rbp) #  n
 popq %rdx
 popq %rax
 cmpq %rdx, %rax
@@ -36,121 +60,86 @@ jmp L2
 L1:
 pushq $1
 L2:
-# a * 2 == 20
-#a
-pushq -8(%rbp) #  a
-#2
-pushq $2
-# multiply:a * 2
-popq %rdx
-popq %rax
-imulq %rdx, %rax
-pushq %rax
-#20
-pushq $20
-popq %rax
-popq %rdx
-cmpq %rdx, %rax
-je L3
-pushq $0
-jmp L4
-L3:
-pushq $1
-jmp L4
-L4:
-popq %rdx
-popq %rax
-cmpq $1, %rdx
-je L5
-pushq %rax
-jmp L6
-L5:
-pushq $1
-L6:
 popq %rax
 cmpq $1, %rax
-je L7
-jmp L8
-L7:
+je L3
+jmp L4
+L3:
 # body of while loop
 
 #a
-pushq -8(%rbp) #  a
-# System.out.println(a)
-popq %rsi
-leaq	L_.str(%rip), %rdi
-callq _printf
-
-#a
-pushq -8(%rbp) #  a
-#1
-pushq $1
-# plus:a + 1
+pushq -32(%rbp) #  a
+#b
+pushq -24(%rbp) #  b
+# plus:a + b
 popq %rdx
 popq %rax
 addq %rdx, %rax
 pushq %rax
-#a = a + 1;
+#temp = a + b;
 
 popq %rax
 movq %rax, -8(%rbp)
 
-# a < 10 || a * 2 == 20
-# a < 10
-#a
-pushq -8(%rbp) #  a
-#10
-pushq $10
+#b
+pushq -24(%rbp) #  b
+#a = b;
+
+popq %rax
+movq %rax, -32(%rbp)
+
+#temp
+pushq -8(%rbp) #  temp
+#b = temp;
+
+popq %rax
+movq %rax, -24(%rbp)
+
+#b
+pushq -24(%rbp) #  b
+# System.out.println(b)
+popq %rsi
+leaq	L_.str(%rip), %rdi
+callq _printf
+
+#i
+pushq -40(%rbp) #  i
+#1
+pushq $1
+# plus:i + 1
+popq %rdx
+popq %rax
+addq %rdx, %rax
+pushq %rax
+#i = i + 1;
+
+popq %rax
+movq %rax, -40(%rbp)
+
+# i < n
+#i
+pushq -40(%rbp) #  i
+#n
+pushq -16(%rbp) #  n
 popq %rdx
 popq %rax
 cmpq %rdx, %rax
-jl L9
+jl L5
 pushq $0
-jmp L10
-L9:
+jmp L6
+L5:
 pushq $1
-L10:
-# a * 2 == 20
-#a
-pushq -8(%rbp) #  a
-#2
-pushq $2
-# multiply:a * 2
-popq %rdx
-popq %rax
-imulq %rdx, %rax
-pushq %rax
-#20
-pushq $20
-popq %rax
-popq %rdx
-cmpq %rdx, %rax
-je L11
-pushq $0
-jmp L12
-L11:
-pushq $1
-jmp L12
-L12:
-popq %rdx
-popq %rax
-cmpq $1, %rdx
-je L13
-pushq %rax
-jmp L14
-L13:
-pushq $1
-L14:
+L6:
 
 popq %rax
 cmpq $1, %rax
-je L7
-jmp L8
-L8:
+je L3
+jmp L4
+L4:
 # calculate return value
 # epilogue
 popq %rax
-addq $8, %rsp
+addq $40, %rsp
 movq %rbp, %rsp
 popq %rbp
 retq

@@ -6,6 +6,10 @@
 /*
   * env /usr/bin/arch -x86_64 /bin/zsh —-login
   gcc hello.c -S -c -O0
+  gcc -c hello.s -o hello.o
+  gcc hello.o -o hello
+  ./hello
+  -----------------------------------------------
  *  %java -classpath javacc.jar javacc MiniJava.jj
  *  %javac MiniJava.java
  *  %java MiniJava
