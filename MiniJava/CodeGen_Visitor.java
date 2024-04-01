@@ -34,8 +34,8 @@ public class CodeGen_Visitor implements Visitor {
         + "popq %rax\n"
         + "cmpq $1, %rdx\n"
         + "je "+ label1 + "\n"
-        + "pushq $0"
-        + "jmp "+label2
+        + "pushq $0\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq %rax\n"
         + label2+":\n";  
@@ -268,18 +268,41 @@ public class CodeGen_Visitor implements Visitor {
 
     public Object visit(If node, Object data){ 
         // not implemented yet
-        node.e.accept(this, data);
+        String e = (String) node.e.accept(this, data);
+        String if_block = "";
+        String else_block = "";
         if (node.if_block != null){
-            node.if_block.accept(this,data);
+            if_block = (String) node.if_block.accept(this,data);
         }
         if (node.elif_block != null){
              node.elif_block.accept(this,data);
         }
         if (node.else_block != null){
-             node.else_block.accept(this,data);
+            else_block = (String)node.else_block.accept(this,data);
         }
+        String label1 = "L"+labelNum;
+        labelNum += 1;
+        String label2 = "L"+labelNum;
+        labelNum += 1;
+        String label3 = "L"+labelNum;
+        labelNum += 1;
 
-        return "# If not implemented yet\n"; 
+        return "# conditional set up\n"
+        + e
+        + "popq %rax\n"
+        + "cmpq $1, %rax\n"
+        + "je "+ label1 + "\n"
+        + "jmp "+label2+"\n"
+        + label1+":\n"
+        + "# body of if statement\n"
+        + if_block
+        + "jmp "+label3+"\n"
+        + label2+":\n"
+        + "# body of else statement\n"
+        + else_block
+        + "jmp "+label3+"\n"
+        + label3+":\n";
+
     }
 
     public Object visit(ElseIf node, Object data){
@@ -328,10 +351,10 @@ public class CodeGen_Visitor implements Visitor {
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
-        + "cmpq %rax, %rdx\n"
+        + "cmpq %rdx, %rax\n"
         + "jl "+ label1 + "\n"
-        + "pushq $0"
-        + "jmp "+label2
+        + "pushq $0\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $1\n"
         + label2+":\n";
@@ -504,8 +527,8 @@ public class CodeGen_Visitor implements Visitor {
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
         + "je "+ label1 + "\n"
-        + "pushq $1"
-        + "jmp "+label2
+        + "pushq $1\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $0\n"
         + label2+":\n"; 
@@ -712,8 +735,8 @@ public class CodeGen_Visitor implements Visitor {
         + "popq %rax\n"
         + "cmpq $1, %rdx\n"
         + "je "+ label1 + "\n"
-        + "pushq %rax"
-        + "jmp "+label2
+        + "pushq %rax\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $1\n"
         + label2+":\n";
@@ -737,6 +760,7 @@ public class CodeGen_Visitor implements Visitor {
         + "cmpq %rdx, %rax\n"
         + "jne "+ label1 + "\n"
         + "pushq $0\n"
+        + "jmp "+label2 + "\n"
         + label1+":\n"  
         + "pushq $1\n"
         + "jmp "+label2+"\n"
@@ -767,10 +791,10 @@ public class CodeGen_Visitor implements Visitor {
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
-        + "cmpq %rax, %rdx\n"
+        + "cmpq %rdx, %rax\n"
         + "jle "+ label1 + "\n"
-        + "pushq $0"
-        + "jmp "+label2
+        + "pushq $0" + "\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $1\n"
         + label2+":\n"; 
@@ -821,10 +845,10 @@ public class CodeGen_Visitor implements Visitor {
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
-        + "cmpq %rax, %rdx\n"
+        + "cmpq %rdx, %rax\n"
         + "jge "+ label1 + "\n"
-        + "pushq $0"
-        + "jmp "+label2
+        + "pushq $0\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $1\n"
         + label2+":\n"; 
@@ -842,10 +866,10 @@ public class CodeGen_Visitor implements Visitor {
         + e1 + e2
         + "popq %rdx\n"
         + "popq %rax\n"
-        + "cmpq $1, %rdx\n"
+        + "cmpq %rdx, %rax\n"
         + "jg "+ label1 + "\n"
-        + "pushq $0"
-        + "jmp "+label2
+        + "pushq $0\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $1\n"
         + label2+":\n";
@@ -874,6 +898,7 @@ public class CodeGen_Visitor implements Visitor {
         + "cmpq %rdx, %rax\n"
         + "je "+ label1 + "\n"
         + "pushq $0\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq $1\n"
         + "jmp "+label2+"\n"

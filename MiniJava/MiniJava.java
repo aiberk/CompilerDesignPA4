@@ -6,7 +6,7 @@ public class MiniJava implements MiniJavaConstants {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("demo_array.java");
+    FileReader fileReader = new FileReader("demo_while.java");
 
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();

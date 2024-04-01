@@ -9,126 +9,100 @@ _main:
 pushq %rbp
 movq %rsp, %rbp
 #locals
-# James_main_b->-8(%rbp)
-# James_main_a->-16(%rbp)
-# James_main_t->-24(%rbp)
-# James_main_s->-32(%rbp)
+# James_main_a->-8(%rbp)
 #make space for locals on stack
-subq $32, %rsp
+subq $8, %rsp
 
-#0
-pushq $0
-#a = 0;
-
-popq %rax
-movq %rax, -16(%rbp)
-
-#3
-pushq $3
-#t = 3;
+#1
+pushq $1
+#a = 1;
 
 popq %rax
-movq %rax, -24(%rbp)
-
-# b = new int[10];
-
-movq $88, %rdi
-callq _malloc
 movq %rax, -8(%rbp)
-movq $0, %rcx
-movq $10, %rdx
-movq %rdx, (%rax, %rcx, 8)
 
-# b[0] = 100;
-
-#100
-pushq $100
-#0
-pushq $0
-popq %rcx
-incq %rcx
-movq -8(%rbp), %rax
-popq %rdx
-movq %rdx, (%rax, %rcx, 8)
-
-# b[t] = 200;
-
-#200
-pushq $200
-#t
-pushq -24(%rbp) #  t
-popq %rcx
-incq %rcx
-movq -8(%rbp), %rax
-popq %rdx
-movq %rdx, (%rax, %rcx, 8)
-
-# b[t]
-#b
-pushq -8(%rbp) #  b
-#t
-pushq -24(%rbp) #  t
-popq %rcx
-incq %rcx
-popq %rax
-pushq (%rax, %rcx, 8)
-#a = b[t];
-
-popq %rax
-movq %rax, -16(%rbp)
-
+# conditional set up
+# (a + 1 < 0)&&(a - 1 == 0)
+# a + 1 < 0
 #a
-pushq -16(%rbp) #  a
-# System.out.println(a)
-popq %rsi
-leaq	L_.str(%rip), %rdi
-callq _printf
-
-# b[0]
-#b
-pushq -8(%rbp) #  b
-#0
-pushq $0
-popq %rcx
-incq %rcx
-popq %rax
-pushq (%rax, %rcx, 8)
-# b[t]
-#b
-pushq -8(%rbp) #  b
-#t
-pushq -24(%rbp) #  t
-popq %rcx
-incq %rcx
-popq %rax
-pushq (%rax, %rcx, 8)
-# plus:b[0] + b[t]
+pushq -8(%rbp) #  a
+#1
+pushq $1
+# plus:a + 1
 popq %rdx
 popq %rax
 addq %rdx, %rax
 pushq %rax
-# System.out.println(b[0] + b[t])
-popq %rsi
-leaq	L_.str(%rip), %rdi
-callq _printf
-
-# b.length
-#b
-pushq -8(%rbp) #  b
-
+#0
+pushq $0
+popq %rdx
 popq %rax
-movq $0, %rcx
-pushq (%rax,%rcx, 8)
-# System.out.println(b.length)
+cmpq %rdx, %rax
+jl L1
+pushq $0
+jmp L2
+L1:
+pushq $1
+L2:
+# a - 1 == 0
+#a
+pushq -8(%rbp) #  a
+#1
+pushq $1
+# minus:a - 1
+popq %rdx
+popq %rax
+subq %rdx, %rax
+pushq %rax
+#0
+pushq $0
+popq %rax
+popq %rdx
+cmpq %rdx, %rax
+je L3
+pushq $0
+jmp L4
+L3:
+pushq $1
+jmp L4
+L4:
+popq %rdx
+popq %rax
+cmpq $1, %rdx
+je L5
+pushq $0
+jmp L6
+L5:
+pushq %rax
+L6:
+popq %rax
+cmpq $1, %rax
+je L7
+jmp L8
+L7:
+# body of if statement
+
+#1
+pushq $1
+# System.out.println(1)
 popq %rsi
 leaq	L_.str(%rip), %rdi
 callq _printf
+jmp L9
+L8:
+# body of else statement
+
+#0
+pushq $0
+# System.out.println(0)
+popq %rsi
+leaq	L_.str(%rip), %rdi
+callq _printf
+jmp L9
+L9:
 # calculate return value
-#a
-pushq -16(%rbp) #  a
 # epilogue
 popq %rax
-addq $32, %rsp
+addq $8, %rsp
 movq %rbp, %rsp
 popq %rbp
 retq
