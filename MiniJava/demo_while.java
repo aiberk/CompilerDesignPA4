@@ -1,12 +1,9 @@
 class James{
     public int main(){
         int a;
-        a = 1;
-        if ((a + 1 < 0) && (a - 1 == 0)){
-            System.out.println(1);
-        }
-        else{
-            System.out.println(0);
-        }
+        int b;
+        a = 10;
+        b = 10 < 8 ? 24 : 21;
+        System.out.println(b);
     }
 }

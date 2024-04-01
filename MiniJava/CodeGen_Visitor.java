@@ -826,8 +826,8 @@ public class CodeGen_Visitor implements Visitor {
         + "popq %rbx\n"
         + "cmpq $1, %rbx\n"
         + "je "+ label1 + "\n"
-        + "pushq %rax"
-        + "jmp "+label2
+        + "pushq %rax\n"
+        + "jmp "+label2+"\n"
         + label1+":\n"  
         + "pushq %rdx\n"
         + label2+":\n";
