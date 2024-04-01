@@ -1,10 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(void){
-    int myNumbers[4];
-
-    // Add elements
-    myNumbers[0] = 25;
-    
-    return myNumbers[0];
+    int a;
+    int b;
+    a = 10;
+    b = 20;
+    printf("%de\n",a * b);
 }

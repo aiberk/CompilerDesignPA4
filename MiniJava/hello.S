@@ -10,27 +10,22 @@ _main:                                  ## @main
 	.cfi_offset %rbp, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register %rbp
-	subq	$48, %rsp
-	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
-	movq	(%rax), %rax
-	movq	%rax, -8(%rbp)
-	movl	$0, -36(%rbp)
-	movl	$25, -32(%rbp)
-	movl	-32(%rbp), %eax
-	movl	%eax, -40(%rbp)                 ## 4-byte Spill
-	movq	___stack_chk_guard@GOTPCREL(%rip), %rax
-	movq	(%rax), %rax
-	movq	-8(%rbp), %rcx
-	cmpq	%rcx, %rax
-	jne	LBB0_2
-## %bb.1:
-	movl	-40(%rbp), %eax                 ## 4-byte Reload
-	addq	$48, %rsp
+	subq	$16, %rsp
+	movl	$10, -4(%rbp)
+	movl	$20, -8(%rbp)
+	movl	-4(%rbp), %esi
+	imull	-8(%rbp), %esi
+	leaq	L_.str(%rip), %rdi
+	movb	$0, %al
+	callq	_printf
+	xorl	%eax, %eax
+	addq	$16, %rsp
 	popq	%rbp
 	retq
-LBB0_2:
-	callq	___stack_chk_fail
-	ud2
 	.cfi_endproc
                                         ## -- End function
+	.section	__TEXT,__cstring,cstring_literals
+L_.str:                                 ## @.str
+	.asciz	"%de\n"
+
 .subsections_via_symbols

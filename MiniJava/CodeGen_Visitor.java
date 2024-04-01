@@ -52,7 +52,7 @@ public class CodeGen_Visitor implements Visitor {
         + "incq %rcx\n"
         + "movq "+location + ", %rax\n"
         + "popq %rdx\n"
-        + "movq %rdx, (%rax, %rcx, $8)\n";
+        + "movq %rdx, (%rax, %rcx, 8)\n";
         
     } 
 
@@ -71,7 +71,7 @@ public class CodeGen_Visitor implements Visitor {
         + "popq %rcx\n"
         + "incq %rcx\n"
         + "popq %rax\n"
-        + "pushq (%rax, %rcx, $8)\n";
+        + "pushq (%rax, %rcx, 8)\n";
     } 
 
     public Object visit(Assign node, Object data){ 
@@ -127,7 +127,8 @@ public class CodeGen_Visitor implements Visitor {
             }
             return (String) e2.e.accept(this, data)
             + "# " + node.accept(ppVisitor,0) + "\n"
-            + "popq %rdi\n"
+            + "popq %rsi\n"
+            + "leaq	L_.str(%rip), %rdi\n"
             + "callq _printf\n";
 
         }
@@ -394,8 +395,10 @@ public class CodeGen_Visitor implements Visitor {
         int stackChange = - stackOffset;
 
         prologue = 
-        
-        ".globl "+"_"+theLabel+"\n"
+        ".section	__TEXT,__text,regular,pure_instructions\n"
+        + ".build_version macos, 13, 0	sdk_version 13, 0\n"
+        +".globl "+"_"+theLabel+"\n"
+        + ".p2align	4, 0x90\n"
         +"_"+theLabel+":\n"
         +formals
         + "# prologue\n"
@@ -412,7 +415,11 @@ public class CodeGen_Visitor implements Visitor {
         +   "movq %rbp, %rsp\n"
         +   "popq %rbp\n"
         // maybe insert code her to print out the return value
-        +   "retq\n";
+        +   "retq\n"
+        + "L_.str:\n"
+	    + ".asciz	\"%d\\n\"\n"
+
+        + ".subsections_via_symbols\n";
 
         return 
           prologue 
@@ -903,8 +910,12 @@ public class CodeGen_Visitor implements Visitor {
     }
 
     public Object visit(Attribute node, Object data){ 
-        String attr = node.i.s;
-        node.e.accept(this, data);
+        if (node.i.s.equals("length")){
+            return "# " + node.accept(ppVisitor,0)+"\n"
+            + (String) node.e.accept(this, data) + "\n"
+            + "popq %rax\n"
+            + "pushq (%rax,$rcx,)\n";
+        }
         return "# Attribute not implemented \n";
     }
     public Object visit(InPlaceOp node, Object data){ 

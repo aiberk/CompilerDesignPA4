@@ -1,5 +1,5 @@
 class James{
-    public int main(int a, int b){
+    public int main(){
         int a;
         int b;
         a = 10;
