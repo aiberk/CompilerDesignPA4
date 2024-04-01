@@ -23,10 +23,10 @@ public class CodeGen_Visitor implements Visitor {
     
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -280,12 +280,12 @@ public class CodeGen_Visitor implements Visitor {
         if (node.else_block != null){
             else_block = (String)node.else_block.accept(this,data);
         }
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
-        String label3 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label3 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# conditional set up\n"
         + e
@@ -342,10 +342,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(LessThan node, Object data){ 
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -517,10 +517,10 @@ public class CodeGen_Visitor implements Visitor {
 
 
         String e = (String) node.e.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e
@@ -689,22 +689,22 @@ public class CodeGen_Visitor implements Visitor {
             scode = (String) node.s.accept(this, data);
         }
 
+    
+        String label1 = "L"+this.labelNum;
+        this.this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.this.labelNum += 1;
 
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
-
-        return "# "+node.accept(ppVisitor, 0) + "\n"
+        return "# while loop set up\n"
         + e
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
         + "je "+ label1 + "\n"
-        + "jmp "+label2
+        + "jmp "+label2+"\n"
         + label1+":\n"
-        + "# body of while loop"
-        + scode 
-        + e
+        + "# body of while loop\n"
+        + scode +"\n"
+        + e+"\n"
         + "popq %rax\n"
         + "cmpq $1, %rax\n"
         + "je "+ label1 + "\n"
@@ -724,10 +724,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(Or node, Object data){
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -748,10 +748,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(NotEquals node, Object data){ 
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -782,10 +782,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(LessThanOrEqual node, Object data){ 
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -814,10 +814,10 @@ public class CodeGen_Visitor implements Visitor {
         String e2 = (String) node.if_true.accept(this, data);
         String e3 = (String) node.if_false.accept(this, data);
 
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2 + e3
@@ -836,10 +836,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(GreaterThanOrEqual node, Object data){
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -857,10 +857,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(GreaterThan node, Object data){ 
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
@@ -886,10 +886,10 @@ public class CodeGen_Visitor implements Visitor {
     public Object visit(Equals node, Object data){
         String e1 = (String) node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
-        String label1 = "L"+labelNum;
-        labelNum += 1;
-        String label2 = "L"+labelNum;
-        labelNum += 1;
+        String label1 = "L"+this.labelNum;
+        this.labelNum += 1;
+        String label2 = "L"+this.labelNum;
+        this.labelNum += 1;
 
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e1 + e2
