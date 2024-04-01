@@ -17,13 +17,13 @@ subq $16, %rsp
 
 movq $0, -8(%rbp)  # James__j->-8(%rbp)
 
-#100
-pushq $100
+#16
+pushq $16
 popq %rdi
 # calling fib
 callq _fib
 pushq %rax
-#j = fib(100);
+#j = fib(16);
 
 popq %rax
 movq %rax, -8(%rbp)
@@ -35,8 +35,8 @@ popq %rsi
 leaq	L_.str(%rip), %rdi
 callq _printf
 # calculate return value
-#j
-pushq -8(%rbp) #  j
+#100
+pushq $100
 # epilogue
 popq %rax
 addq $16, %rsp
@@ -81,13 +81,6 @@ pushq $1
 
 popq %rax
 movq %rax, -16(%rbp)
-
-#0
-pushq $0
-#temp = 0;
-
-popq %rax
-movq %rax, -40(%rbp)
 
 # while loop set up
 # i < n
@@ -174,8 +167,8 @@ je L3
 jmp L4
 L4:
 # calculate return value
-#a
-pushq -24(%rbp) #  a
+#b
+pushq -32(%rbp) #  b
 # epilogue
 popq %rax
 addq $48, %rsp

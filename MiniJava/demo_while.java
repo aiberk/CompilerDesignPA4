@@ -17,9 +17,9 @@ class James{
     }
     public int main(){
         int j;
-        j = fib(100);
+        j = fib(16);
         System.out.println(j);
-        return j;
+        return 100;
     }
 
 }
