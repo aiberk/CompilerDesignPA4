@@ -67,7 +67,7 @@ public class CodeGen_Visitor implements Visitor {
         String e1 = (String)node.e1.accept(this, data);
         String e2 = (String) node.e2.accept(this, data);
         return "# "+node.accept(ppVisitor, 0) + "\n"
-        + e2 + e1
+        + e1 + e2
         + "popq %rcx\n"
         + "incq %rcx\n"
         + "popq %rax\n"
