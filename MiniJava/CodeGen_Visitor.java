@@ -1,5 +1,6 @@
 import syntaxtree.*;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 //import org.omg.CORBA.SystemException;
 
@@ -321,42 +322,85 @@ public class CodeGen_Visitor implements Visitor {
         return data; 
     }
 
+    public void populate_conditionals(ArrayList<ArrayList<String>> conditionals, ElseIf elif, Object data){
+        if (elif.n != null){
+            this.populate_conditionals(conditionals, elif.n, data);
+        }
+        ArrayList<String>cond = new ArrayList<String>();
+        cond.add((String) elif.e.accept(this, data));
+        if (elif.block != null){
+            cond.add((String) elif.block.accept(this, data));
+        }
+        else{
+            cond.add("");
+        }
+        conditionals.add(cond);
+    }
     public Object visit(If node, Object data){ 
         // not implemented yet
         String e = (String) node.e.accept(this, data);
         String if_block = "";
         String else_block = "";
+        ArrayList<ArrayList<String>> conditionals = new ArrayList<ArrayList<String>>();
+        ArrayList<String>cond = new ArrayList<String>();
+        cond.add(e);
         if (node.if_block != null){
-            if_block = (String) node.if_block.accept(this,data);
+            cond.add((String) node.if_block.accept(this,data));
         }
+        else{
+            cond.add("");
+        }
+        conditionals.add(cond);
         if (node.elif_block != null){
-             node.elif_block.accept(this,data);
+            populate_conditionals(conditionals, node.elif_block, data);
+        }
+        String conditional_src = "# conditional set up\n";
+        for (int i = 0; i < conditionals.size(); i++){
+            String l1 = "L"+this.labelNum;
+            String l2 = "_L"+(this.labelNum + 1);
+            if (i == 0){
+                conditional_src += conditionals.get(i).get(0)
+                +"#conditional logic start\n"
+                + "popq %rax\n"
+                + "cmpq $1, %rax\n"
+                + "je "+ l1 + "\n"
+                + "jmp "+l2+"\n"
+                + l1+":\n"
+                + "# body of if statement\n"
+                + conditionals.get(i).get(1)
+                + "jmp XXXX\n";
+                this.labelNum += 1;
+            }
+            else{
+                String _l1 = "__L"+this.labelNum;
+                conditional_src += "_"+l1+":\n"
+                + conditionals.get(i).get(0)
+                + "popq %rax\n"
+                + "cmpq $1, %rax\n"
+                + "je "+ _l1 + "\n"
+                + "jmp "+l2+"\n"
+                + _l1 + ":\n"
+                + "#body of elif statements\n"
+                + conditionals.get(i).get(1)
+                + "jmp XXXX\n";
+                this.labelNum += 1;
+
+            }
+
         }
         if (node.else_block != null){
-            else_block = (String)node.else_block.accept(this,data);
+            conditional_src += "_L"+this.labelNum+":\n"
+            + (String)node.else_block.accept(this,data)
+            + "jmp XXXX\n";
+            this.labelNum += 1;
         }
-        String label1 = "L"+this.labelNum;
+        conditional_src += "XXXX:\n";
+        conditional_src = conditional_src.replace("XXXX", "L"+this.labelNum);
+        //System.out.println("testing conditional src here");
+        //System.out.println(conditional_src);
         this.labelNum += 1;
-        String label2 = "L"+this.labelNum;
-        this.labelNum += 1;
-        String label3 = "L"+this.labelNum;
-        this.labelNum += 1;
-
-        return "# conditional set up\n"
-        + e
-        + "popq %rax\n"
-        + "cmpq $1, %rax\n"
-        + "je "+ label1 + "\n"
-        + "jmp "+label2+"\n"
-        + label1+":\n"
-        + "# body of if statement\n"
-        + if_block
-        + "jmp "+label3+"\n"
-        + label2+":\n"
-        + "# body of else statement\n"
-        + else_block
-        + "jmp "+label3+"\n"
-        + label3+":\n";
+        return conditional_src;
+        
 
     }
 
