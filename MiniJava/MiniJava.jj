@@ -5,10 +5,10 @@
 
 /*
   * env /usr/bin/arch -x86_64 /bin/zsh —-login
-  gcc hello.c -S -c -O0
-  gcc -c hello.s -o hello.o
-  gcc hello.o -o hello
-  ./hello
+  gcc demo_while.c -S -c -O0
+  gcc -c demo_while.s -o demo_while.o
+  gcc demo_while.o -o demo_while
+  ./demo_while
   -----------------------------------------------
  *  %java -classpath javacc.jar javacc MiniJava.jj
  *  %javac MiniJava.java
@@ -30,7 +30,7 @@ public class MiniJava {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException, FileNotFoundException {
-    FileReader fileReader = new FileReader("demo_while.java");
+    FileReader fileReader = new FileReader("demo_array.java");
   
     MiniJava parser = new MiniJava(fileReader);
     ClassDeclList s = parser.Program();

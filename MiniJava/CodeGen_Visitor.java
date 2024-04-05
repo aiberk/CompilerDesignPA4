@@ -49,6 +49,7 @@ public class CodeGen_Visitor implements Visitor {
         String varName = currClass+"_"+currMethod+"_"+node.i.s;
         String location = (String) varMap.get(varName);
         String e1 = (String)node.e1.accept(this, data);
+        //varName[e1] = e2
         String e2 = (String) node.e2.accept(this, data);
         return "# "+node.accept(ppVisitor, 0) + "\n"
         + e2 + e1
@@ -83,14 +84,27 @@ public class CodeGen_Visitor implements Visitor {
        String location = varMap.get(varName);
        if (node.e instanceof NewObject){
             if (((NewObject) node.e).i instanceof ArrayLookup){
-                int n = Integer.parseInt(((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s);
+                if (((ArrayLookup) ((NewObject) node.e).i).e2 instanceof IntegerLiteral){
+                    int n = Integer.parseInt(((IntegerLiteral) ((ArrayLookup) ((NewObject) node.e).i).e2).s);
+                    return "# "+node.accept(ppVisitor, 0) + "\n"
+                    + "movq $"+8*(n+1)+", %rdi\n"
+                    + "callq _malloc\n"
+                    + "movq %rax, "+location+"\n"
+                    + "movq $0, %rcx\n"
+                    + "movq $"+n+", %rdx\n"
+                    + "movq %rdx, (%rax, %rcx, 8)\n";
+                }
                 return "# "+node.accept(ppVisitor, 0) + "\n"
-                + "movq $"+8*(n+1)+", %rdi\n"
-                + "callq _malloc\n"
-                + "movq %rax, "+location+"\n"
-                + "movq $0, %rcx\n"
-                + "movq $"+n+", %rdx\n"
-                + "movq %rdx, (%rax, %rcx, 8)\n";
+                    + (String) ((ArrayLookup) ((NewObject) node.e).i).e2.accept(this, data)
+                    + "popq %rax\n"
+                    + "movq %rax, %rdx\n"
+                    + "incq %rax\n"
+                    + "imulq $8, %rax\n"
+                    + "movq %rdx, %rdi\n"
+                    + "callq _malloc\n"
+                    + "movq %rax, "+location+"\n"
+                    + "movq $0, %rcx\n"
+                    + "movq %rdx, (%rax, %rcx, 8)\n";
             }
 
 
